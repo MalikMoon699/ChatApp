@@ -1,4 +1,3 @@
-// app.jsx
 import { useState, useEffect } from "react";
 import Home from "./pages/ChatPage";
 import Login from "./auth/login";
@@ -15,8 +14,18 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("token="))
+          ?.split("=")[1];
+
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
         const response = await fetch(
-          "https://chat-app-backend-one-lemon.vercel.app/api/auth/check",
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/check`,
           {
             credentials: "include",
           }
@@ -34,47 +43,45 @@ function App() {
   }, []);
 
   if (loading) {
-    return <Loader loading={true}/>
+    return <Loader loading={true} />;
   }
 
   return (
-    <>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <Home
-                setIsAuthenticated={setIsAuthenticated}
-                isAuthenticated={isAuthenticated}
-              />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            !isAuthenticated ? (
-              <Login setIsAuthenticated={setIsAuthenticated} />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
-        <Route
-          path="/signUp"
-          element={
-            !isAuthenticated ? (
-              <SignUp setIsAuthenticated={setIsAuthenticated} />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
-      </Routes>
-    </>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          isAuthenticated ? (
+            <Home
+              setIsAuthenticated={setIsAuthenticated}
+              isAuthenticated={isAuthenticated}
+            />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          !isAuthenticated ? (
+            <Login setIsAuthenticated={setIsAuthenticated} />
+          ) : (
+            <Navigate to="/" />
+          )
+        }
+      />
+      <Route
+        path="/signUp"
+        element={
+          !isAuthenticated ? (
+            <SignUp setIsAuthenticated={setIsAuthenticated} />
+          ) : (
+            <Navigate to="/" />
+          )
+        }
+      />
+    </Routes>
   );
 }
 

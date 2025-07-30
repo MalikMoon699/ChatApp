@@ -1,4 +1,3 @@
-// context/SocketContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { fetchCurrentUser } from "../Utils/Message";
@@ -10,24 +9,42 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     const setupSocket = async () => {
-      const user = await fetchCurrentUser();
-      if (!user?._id) return;
+      try {
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("token="))
+          ?.split("=")[1];
 
-      const socketInstance = io(
-        "https://chat-app-backend-one-lemon.vercel.app",
-        {
+        if (!token) return;
+
+        const user = await fetchCurrentUser();
+        if (!user?._id) return;
+
+        const socketInstance = io(import.meta.env.VITE_BACKEND_URL, {
           query: { userId: user._id },
-        }
-      );
+          auth: { token },
+          transports: ["websocket"],
+        });
 
-      setSocket(socketInstance);
+        socketInstance.on("connect", () => {
+          console.log("Socket connected:", socketInstance.id);
+        });
+
+        socketInstance.on("connect_error", (error) => {
+          console.error("Socket connection error:", error.message);
+        });
+
+        setSocket(socketInstance);
+
+        return () => {
+          socketInstance.disconnect();
+        };
+      } catch (error) {
+        console.error("Socket setup error:", error);
+      }
     };
 
     setupSocket();
-
-    return () => {
-      if (socket) socket.disconnect();
-    };
   }, []);
 
   return (

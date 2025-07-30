@@ -1,4 +1,3 @@
-//Message.controller.js
 import Conversation from "../Models/Conversation_Models.js";
 import Message from "../Models/Message_Models.js";
 import { io, getReceiverSocketId } from "../sockets/server.js";
@@ -26,11 +25,10 @@ export const sendMessage = async (req, res) => {
       conversation.lastMessageTime = new Date();
     }
     await Promise.all([conversation.save(), newMessage.save()]);
-    res
-      .status(201)
-      .json(
-        `message id:${newMessage._id} send successfully for conversation with id: ${conversation._id} `
-      );
+    res.status(201).json({
+      message: `Message id:${newMessage._id} sent successfully for conversation with id: ${conversation._id}`,
+      newMessage,
+    });
   } catch (error) {
     console.log("Error in sendMessage", error);
     res.status(500).json({ error: "Internal server error" });
@@ -45,10 +43,10 @@ export const getMessage = async (req, res) => {
       members: { $all: [senderId, chatUser] },
     }).populate("messages");
     if (!conversation) {
-      return res.status(201).json([]);
+      return res.status(200).json([]);
     }
     const messages = conversation.messages;
-    res.status(201).json(messages);
+    res.status(200).json(messages);
   } catch (error) {
     console.log("Error in getMessage", error);
     res.status(500).json({ error: "Internal server error" });

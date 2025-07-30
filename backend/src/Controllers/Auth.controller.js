@@ -1,4 +1,3 @@
-//Auth.controller.js
 import { generateCustomId } from "../Public/Utils/generateId.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -25,6 +24,7 @@ export const signUp = async (req, res) => {
     email,
     password: hashedPassword,
     customId,
+    profile_img: req.file ? req.file.filename : null,
   });
 
   await newUser.save();
@@ -35,8 +35,9 @@ export const signUp = async (req, res) => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     maxAge: 7 * 24 * 60 * 60 * 1000,
+    sameSite: "lax",
   });
 
   res.json({
@@ -45,6 +46,7 @@ export const signUp = async (req, res) => {
       id: newUser._id,
       name: newUser.name,
       email: newUser.email,
+      profile_img: newUser.profile_img,
     },
   });
 };
@@ -68,8 +70,9 @@ export const login = async (req, res) => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     maxAge: 7 * 24 * 60 * 60 * 1000,
+    sameSite: "lax",
   });
 
   res.json({
@@ -78,6 +81,7 @@ export const login = async (req, res) => {
       id: user._id,
       name: user.name,
       email: user.email,
+      profile_img: user.profile_img,
     },
   });
 };
@@ -85,7 +89,7 @@ export const login = async (req, res) => {
 export const userdata = async (req, res) => {
   try {
     const search = req.query.search || "";
-    const currentUserId = req.user?._id; 
+    const currentUserId = req.user?._id;
 
     const query = {
       $or: [
@@ -171,13 +175,12 @@ export const updateProfile = async (req, res) => {
     }
 
     user.name = name;
-
     if (req.file) {
-      user.profile = req.file.filename;
+      user.profile_img = req.file.filename;
     }
 
     await user.save();
-
+    res.redirect("/"); // Redirect to home after update
   } catch (err) {
     console.error("Error updating profile:", err);
     res.status(500).send("Server error");

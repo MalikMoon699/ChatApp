@@ -1,8 +1,7 @@
-//Sidebar.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import socket from "./Socket";
+import socket from "../Utils/Socket";
 import { fetchUsers, handleLogout } from "../Utils/Sidebar";
 import Models from "./Models";
 import Loader from "./Loader";
@@ -41,6 +40,10 @@ const Sidebar = ({
       setUsers(result);
     } catch (err) {
       console.error("Error fetching users", err);
+      if (err.message === "Unauthorized") {
+        setIsAuthenticated(false);
+        navigate("/login");
+      }
     } finally {
       setLoading(false);
     }

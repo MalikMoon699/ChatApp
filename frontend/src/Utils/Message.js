@@ -1,9 +1,7 @@
-//Message.js
-
 export const sendMessage = async (receiverId, message) => {
   try {
     const res = await fetch(
-      `https://chat-app-backend-one-lemon.vercel.app/message/send/${receiverId}`,
+      `${import.meta.env.VITE_BACKEND_URL}/message/send/${receiverId}`,
       {
         method: "POST",
         headers: {
@@ -30,7 +28,7 @@ export const sendMessage = async (receiverId, message) => {
 export const fetchCurrentUser = async () => {
   try {
     const res = await fetch(
-      "https://chat-app-backend-one-lemon.vercel.app/current-user",
+      `${import.meta.env.VITE_BACKEND_URL}/current-user`,
       {
         credentials: "include",
       }
@@ -52,7 +50,7 @@ export const fetchCurrentUser = async () => {
 export const fetchMessages = async (receiverId) => {
   try {
     const res = await fetch(
-      `https://chat-app-backend-one-lemon.vercel.app/message/get/${receiverId}`,
+      `${import.meta.env.VITE_BACKEND_URL}/message/get/${receiverId}`,
       {
         credentials: "include",
       }

@@ -1,9 +1,7 @@
-//Sidebar.js
-
 export const fetchUsers = async (search = "") => {
   try {
     const res = await fetch(
-      `https://chat-app-backend-one-lemon.vercel.app/users?search=${search}`,
+      `${import.meta.env.VITE_BACKEND_URL}/users?search=${search}`,
       {
         credentials: "include",
       }
@@ -23,13 +21,10 @@ export const fetchUsers = async (search = "") => {
 
 export const handleLogout = async () => {
   try {
-    const res = await fetch(
-      "https://chat-app-backend-one-lemon.vercel.app/logout",
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/logout`, {
+      method: "GET",
+      credentials: "include",
+    });
 
     return res.ok;
   } catch (err) {

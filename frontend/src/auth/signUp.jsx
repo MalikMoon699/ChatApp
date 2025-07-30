@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "../assets/styles/AuthForm.css";
 import { ArrowRight, Eye, EyeClosed } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
-const signUp = ({ setIsAuthenticated }) => {
+const SignUp = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -13,27 +13,26 @@ const signUp = ({ setIsAuthenticated }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (e) => {
+    e.preventDefault();
     try {
-      const res = await fetch(
-        "https://chat-app-backend-one-lemon.vercel.app/signUp",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: name,
-            email,
-            password,
-            confirm_password: confirmPassword,
-          }),
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/signUp`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          confirm_password: confirmPassword,
+        }),
+      });
 
       const data = await res.json();
       if (res.ok) {
+        localStorage.setItem("userId", data.user.id); // Store userId
         setIsAuthenticated(true);
         navigate("/");
       } else {
@@ -41,6 +40,7 @@ const signUp = ({ setIsAuthenticated }) => {
       }
     } catch (error) {
       console.error("Signup error:", error);
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -51,84 +51,84 @@ const signUp = ({ setIsAuthenticated }) => {
           SignUp to Chat <span>App</span>
         </h1>
         {error && <p className="error-message">{error}</p>}
-        <div className="auth-input-container">
-          <label>Name</label>
-          <input
-            type="text"
-            className="auth-input"
-            placeholder="Enter your Name"
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className="auth-input-container">
-          <label>Email Adress</label>
-          <input
-            type="email"
-            className="auth-input"
-            placeholder="Enter your email address"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="auth-input-container">
-          <label>Password</label>
-          <div className="auth-password-input-container">
+        <form onSubmit={handleSignUp}>
+          <div className="auth-input-container">
+            <label>Name</label>
             <input
+              type="text"
               className="auth-input"
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
             />
-            <div
-              onClick={() => {
-                setShowPassword((prev) => !prev);
-              }}
-              className="auth-password-toggle"
-            >
-              {showPassword ? <Eye /> : <EyeClosed />}
+          </div>
+          <div className="auth-input-container">
+            <label>Email Address</label>
+            <input
+              type="email"
+              className="auth-input"
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="auth-input-container">
+            <label>Password</label>
+            <div className="auth-password-input-container">
+              <input
+                className="auth-input"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <div
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="auth-password-toggle"
+              >
+                {showPassword ? <Eye /> : <EyeClosed />}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="auth-input-container">
-          <label>Confirm Password</label>
-          <div className="auth-password-input-container">
-            <input
-              className="auth-input"
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm your password"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            <div
-              onClick={() => {
-                setShowConfirmPassword((prev) => !prev);
-              }}
-              className="auth-password-toggle"
-            >
-              {showConfirmPassword ? <Eye /> : <EyeClosed />}
+          <div className="auth-input-container">
+            <label>Confirm Password</label>
+            <div className="auth-password-input-container">
+              <input
+                className="auth-input"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <div
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="auth-password-toggle"
+              >
+                {showConfirmPassword ? <Eye /> : <EyeClosed />}
+              </div>
             </div>
           </div>
-        </div>
-        <button onClick={handleSignUp} className="submit-button">
-          SignUp{" "}
-          <span>
-            <ArrowRight />
-          </span>
-        </button>
+          <button type="submit" className="submit-button">
+            SignUp{" "}
+            <span>
+              <ArrowRight />
+            </span>
+          </button>
+        </form>
         <div className="or-line-container">
           <div className="or-line">OR</div>
         </div>
         <button className="create-account">
           Already have an account?{" "}
-          <span
-            onClick={() => {
-              navigate("/login");
-            }}
-          >
-            Login
-          </span>
+          <span onClick={() => navigate("/login")}>Login</span>
         </button>
       </div>
     </div>
   );
 };
 
-export default signUp;
+export default SignUp;

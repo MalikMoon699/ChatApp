@@ -1,4 +1,3 @@
-//ChatPage.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { useSocketContext } from "../context/SocketContext";
 import Sidebar from "../components/Sidebar";
@@ -64,10 +63,15 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
       setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
     });
 
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error.message);
+    });
+
     return () => {
       socket.off("receiveMessage");
       socket.off("messageUpdated");
       socket.off("messageDeleted");
+      socket.off("connect_error");
     };
   }, [socket, selectedContact]);
 
@@ -77,6 +81,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
       setCurrentUser(res);
     } catch (error) {
       console.error("Error fetching current user:", error.message);
+      setIsAuthenticated(false); // Log out if user fetch fails
     }
   };
 
@@ -92,14 +97,12 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
   const sendMessages = async () => {
     if (!message.trim()) return;
     try {
-      await sendMsgAPI(selectedContact._id, message);
-
+      const response = await sendMsgAPI(selectedContact._id, message);
       socket?.emit("sendMessage", {
         receiverId: selectedContact._id,
         senderId: currentUser._id,
         message,
       });
-
       setMessage("");
       await handleGetMessages();
     } catch (error) {
@@ -109,15 +112,12 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(
-        `https://chat-app-backend-one-lemon.vercel.app/message/delete/${id}`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ receiverId: selectedContact._id }),
-        }
-      );
+      await fetch(`${import.meta.env.VITE_BACKEND_URL}/message/delete/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ receiverId: selectedContact._id }),
+      });
 
       socket.emit("messageDeleted", {
         messageId: id,
@@ -135,7 +135,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
 
     try {
       const res = await fetch(
-        `https://chat-app-backend-one-lemon.vercel.app/message/update/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/message/update/${id}`,
         {
           method: "PUT",
           headers: {

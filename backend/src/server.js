@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import connectDB from "./Config/db.js";
 import path from "path";
@@ -10,8 +9,7 @@ import { dirname } from "path";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
-// import { app, io } from "./sockets/server.js";
-import { app } from "./sockets/server.js";
+import { app, server } from "./sockets/server.js"; // Import app and server
 
 dotenv.config();
 
@@ -23,7 +21,7 @@ connectDB();
 app.use(
   cors({
     origin: "https://chat-app-beryl-three-91.vercel.app",
-    credentials: true, // Allow cookies if used
+    credentials: true,
   })
 );
 app.set("view engine", "ejs");
@@ -34,5 +32,5 @@ app.use("/", authRoutes);
 app.use("/message", messageRoutes);
 app.use("/api", dashboardRoutes);
 
-// Export as a Vercel serverless function
+// Export for Vercel
 export default app;

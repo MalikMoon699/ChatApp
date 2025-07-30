@@ -1,9 +1,15 @@
 import { io } from "socket.io-client";
 
-const socket = io("https://chat-app-backend-one-lemon.vercel.app", {
+const token = document.cookie
+  .split("; ")
+  .find((row) => row.startsWith("token="))
+  ?.split("=")[1];
+
+const socket = io(import.meta.env.VITE_BACKEND_URL, {
   query: {
     userId: localStorage.getItem("userId"),
   },
+  auth: { token },
   transports: ["websocket"],
 });
 
