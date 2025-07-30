@@ -4,7 +4,7 @@ dotenv.config();
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect("mongodb://localhost:27017/ChatApp");
     console.log("MongoDB connected");
   } catch (error) {
     console.error("DB error:", error);
