@@ -1,6 +1,6 @@
 // server.js
 import express from "express";
-import connectDB from "./config/db.js";
+import connectDB from "./Config/db.js";
 import path from "path";
 import authRoutes from "./Routes/auth.routes.js";
 import messageRoutes from "./Routes/Message.routes.js";
