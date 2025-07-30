@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import socket from "../Utils/Socket";
+import socket from "./Socket";
 import { fetchUsers, handleLogout } from "../Utils/Sidebar";
 import Models from "./Models";
 import Loader from "./Loader";
