@@ -10,7 +10,8 @@ import { dirname } from "path";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
-import { app, io } from "./sockets/server.js";
+// import { app, io } from "./sockets/server.js";
+import { app } from "./sockets/server.js";
 
 dotenv.config();
 
@@ -22,7 +23,7 @@ connectDB();
 app.use(
   cors({
     origin: "https://chat-app-beryl-three-91.vercel.app",
-    credentials: true,
+    credentials: true, // Allow cookies if used
   })
 );
 app.set("view engine", "ejs");
