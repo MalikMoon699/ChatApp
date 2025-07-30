@@ -1,5 +1,5 @@
 //Auth.controller.js
-import { generateCustomId } from "../public/utils/generateId.js";
+import { generateCustomId } from "../Public/Utils/generateId.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import multer from "multer";
