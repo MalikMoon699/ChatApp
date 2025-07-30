@@ -1,0 +1,134 @@
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: url(https://png.pngtree.com/background/20210716/original/pngtree-black-motion-white-lines-background-picture-image_1390764.jpg);
+}
+
+.auth-form-container {
+  box-shadow: 0px 0px 20px black;
+  border: 1px solid white;
+  padding: 30px;
+  backdrop-filter: blur(2px);
+  border-radius: 8px;
+  width: 390px;
+}
+
+.auth-title {
+  color: white;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.auth-title > span {
+  color: #25a925;
+}
+
+.auth-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  color: white;
+  margin-bottom: 14px;
+}
+
+.auth-input {
+  width: 100%;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid white;
+  background: none;
+  color: white;
+  outline: 0;
+}
+
+.auth-password-input-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid white;
+}
+
+.auth-password-input-container > .auth-input {
+  border: none;
+}
+
+.auth-password-toggle {
+  border-left: 1px solid white;
+  padding: 5px 6px;
+  cursor: pointer;
+}
+
+.submit-button {
+  background-color: #25a925;
+  color: white;
+  border: none;
+  padding: 6px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.or-line-container {
+  background-color: #25a925;
+  height: 1px;
+  margin: 35px 0px 23px 0px;
+  padding: 0 10px;
+  transform: translateY(-50%);
+  width: 100%;
+}
+.or-line {
+  position: absolute;
+  right: 43%;
+  top: 0;
+  color: #25a925;
+  font-weight: 500;
+  background-color: #171523;
+  padding: 0 10px;
+  transform: translateY(-50%);
+}
+
+.create-account {
+  background: none;
+  color: white;
+  border: none;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.create-account > span {
+  color: #25a925;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.create-account > span:hover {
+  border-bottom: 1px solid #25a925;
+}
+
+
+.error-message{
+width: 100%;
+text-align: center;
+color: red;
+}

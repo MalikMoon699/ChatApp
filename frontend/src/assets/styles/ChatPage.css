@@ -1,0 +1,275 @@
+/* ----------------- View ----------------------- */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  background-color: black;
+  gap: 8px;
+  padding: 8px 12px;
+  height: 10vh;
+  cursor: pointer;
+}
+
+.header > img {
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  padding: 2px;
+  border: 1px solid #fff;
+}
+
+.chat-info h1 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chat-info p {
+  font-size: 10px;
+  font-weight: 200;
+}
+
+.chat-messages {
+  height: calc(100vh - 10vh - 60px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  padding: 15px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.chat-box {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: black;
+  width: 100%;
+  padding: 10px 12px;
+}
+
+.chat-box > input {
+  width: 100%;
+  background: no-repeat;
+  border: 0.5px solid white;
+  border-radius: 8px;
+  outline: 0;
+  padding: 10px;
+  font-size: 16px;
+  color: white;
+}
+
+.chat-box > span {
+  cursor: pointer;
+  background-color: #b259fd;
+  padding: 6px 6px 4px 7px;
+  border-radius: 50%;
+}
+
+.message-container {
+  display: flex;
+  align-items: center;
+}
+
+.send-message {
+  justify-content: end;
+}
+
+.recive-message {
+  justify-content: start;
+}
+
+.send-message .message {
+  background-color: #b259fd;
+}
+
+.recive-message .message {
+  background-color: #6959fd;
+}
+
+.message-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 2px;
+  margin: 10px;
+}
+
+.message {
+  position: relative;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  width: fit-content;
+  min-width: 70px;
+  max-width: 300px;
+}
+
+.message-time {
+  font-size: 10px;
+  padding-right: 10px;
+}
+
+.more-options-container {
+  position: absolute;
+  top: 0;
+  cursor: pointer;
+  width: 60%;
+  text-align: end;
+  padding: 0px 4px;
+  background: #0000002b;
+  z-index: 1;
+  visibility: hidden;
+  border-radius: 0px 0px 0px 100%;
+}
+
+.message-content:hover .more-options-container {
+  visibility: visible;
+}
+
+.more-options {
+  position: absolute;
+  bottom: -33px;
+  display: flex;
+  flex-direction: column;
+}
+
+.more-options > button {
+  background: black;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-top: 0.1px solid white;
+  cursor: pointer;
+}
+
+.more-options > button:hover {
+  background: white;
+  color: black;
+  border: none;
+  padding: 10px 16px;
+  border-top: 0.1px solid white;
+  cursor: pointer;
+}
+
+.empty-message {
+  height: 100%;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.encrypted-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.encrypted {
+  width: 450px;
+  display: flex;
+  align-items: start;
+  background: #000000;
+  gap: 10px;
+  padding: 16px 12px;
+  border-radius: 8px;
+  border: 0.1px solid;
+}
+
+.encrypted > span {
+  margin: 0px -5px 0px 5px;
+}
+.encrypted > p {
+  font-size: 13px;
+  font-weight: 200;
+  color: #ffd279;
+  text-align: center;
+  line-height: 17px;
+  margin-left: -11px;
+}
+
+
+.back-btn {
+  display: none; 
+  background: none;
+  border: 0.5px solid white;
+  color: white;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.back-btn:hover {
+  color: black;
+  background: white;
+}
+
+
+/* ------------- Responsive Design ------------------------ */
+
+@media screen and (max-width: 768px) {
+  .back-btn {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .chat-messages {
+    padding: 6px;
+    gap: 10px;
+  }
+
+  .message {
+    padding: 6px 8px;
+    max-width: 260px;
+    min-width: 60px;
+  }
+
+  .message-time {
+    font-size: 7px;
+    padding-right: 5px;
+  }
+  .message > p {
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .encrypted {
+    width: 250px;
+    gap: 14px;
+    padding: 9px 5px;
+  }
+
+  .encrypted > p {
+    font-size: 10px;
+  }
+
+  .chat-box {
+    gap: 6px;
+    width: 100%;
+    padding: 10px 6px;
+  }
+
+  .chat-box > span {
+    cursor: pointer;
+    background-color: #b259fd;
+    padding: 4px 4px 1px 4px;
+    border-radius: 50%;
+  }
+
+  .more-options {
+    bottom: -40px;
+}
+
+  .more-options > button {
+    padding: 7px 10px;
+}
+}
