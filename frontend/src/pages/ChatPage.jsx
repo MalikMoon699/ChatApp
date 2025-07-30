@@ -109,12 +109,15 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`http://localhost:3001/message/delete/${id}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ receiverId: selectedContact._id }),
-      });
+      await fetch(
+        `https://chat-app-backend-one-lemon.vercel.app/message/delete/${id}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ receiverId: selectedContact._id }),
+        }
+      );
 
       socket.emit("messageDeleted", {
         messageId: id,
@@ -131,17 +134,20 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
     if (!editValue.trim()) return alert("Message cannot be empty");
 
     try {
-      const res = await fetch(`http://localhost:3001/message/update/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          newContent: editValue,
-          receiverId: selectedContact._id,
-        }),
-      });
+      const res = await fetch(
+        `https://chat-app-backend-one-lemon.vercel.app/message/update/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            newContent: editValue,
+            receiverId: selectedContact._id,
+          }),
+        }
+      );
 
       if (!res.ok) {
         const error = await res.json();

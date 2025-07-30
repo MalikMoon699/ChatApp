@@ -15,9 +15,12 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/auth/check", {
-          credentials: "include",
-        });
+        const response = await fetch(
+          "https://chat-app-backend-one-lemon.vercel.app/api/auth/check",
+          {
+            credentials: "include",
+          }
+        );
         if (response.ok) {
           setIsAuthenticated(true);
         }

@@ -2,9 +2,12 @@
 
 export const fetchUsers = async (search = "") => {
   try {
-    const res = await fetch(`http://localhost:3001/users?search=${search}`, {
-      credentials: "include",
-    });
+    const res = await fetch(
+      `https://chat-app-backend-one-lemon.vercel.app/users?search=${search}`,
+      {
+        credentials: "include",
+      }
+    );
 
     if (res.status === 401) {
       throw new Error("Unauthorized");
@@ -20,10 +23,13 @@ export const fetchUsers = async (search = "") => {
 
 export const handleLogout = async () => {
   try {
-    const res = await fetch("http://localhost:3001/logout", {
-      method: "GET",
-      credentials: "include",
-    });
+    const res = await fetch(
+      "https://chat-app-backend-one-lemon.vercel.app/logout",
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
 
     return res.ok;
   } catch (err) {

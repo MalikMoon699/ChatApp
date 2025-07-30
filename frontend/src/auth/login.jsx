@@ -12,14 +12,16 @@ const login = ({ setIsAuthenticated }) => {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch("http://localhost:3001/login", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await fetch("https://chat-app-backend-one-lemon.vercel.app/login",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await res.json();
      if (res.ok) {

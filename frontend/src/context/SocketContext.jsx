@@ -13,9 +13,12 @@ export const SocketProvider = ({ children }) => {
       const user = await fetchCurrentUser();
       if (!user?._id) return;
 
-      const socketInstance = io("http://localhost:3001", {
-        query: { userId: user._id },
-      });
+      const socketInstance = io(
+        "https://chat-app-backend-one-lemon.vercel.app",
+        {
+          query: { userId: user._id },
+        }
+      );
 
       setSocket(socketInstance);
     };

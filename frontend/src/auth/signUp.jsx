@@ -15,19 +15,22 @@ const signUp = ({ setIsAuthenticated }) => {
 
   const handleSignUp = async () => {
     try {
-      const res = await fetch("http://localhost:3001/signUp", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name,
-          email,
-          password,
-          confirm_password: confirmPassword,
-        }),
-      });
+      const res = await fetch(
+        "https://chat-app-backend-one-lemon.vercel.app/signUp",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name,
+            email,
+            password,
+            confirm_password: confirmPassword,
+          }),
+        }
+      );
 
       const data = await res.json();
       if (res.ok) {

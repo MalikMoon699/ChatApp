@@ -3,7 +3,7 @@
 export const sendMessage = async (receiverId, message) => {
   try {
     const res = await fetch(
-      `http://localhost:3001/message/send/${receiverId}`,
+      `https://chat-app-backend-one-lemon.vercel.app/message/send/${receiverId}`,
       {
         method: "POST",
         headers: {
@@ -29,9 +29,12 @@ export const sendMessage = async (receiverId, message) => {
 
 export const fetchCurrentUser = async () => {
   try {
-    const res = await fetch("http://localhost:3001/current-user", {
-      credentials: "include",
-    });
+    const res = await fetch(
+      "https://chat-app-backend-one-lemon.vercel.app/current-user",
+      {
+        credentials: "include",
+      }
+    );
 
     if (!res.ok) {
       const text = await res.text();
@@ -48,9 +51,12 @@ export const fetchCurrentUser = async () => {
 
 export const fetchMessages = async (receiverId) => {
   try {
-    const res = await fetch(`http://localhost:3001/message/get/${receiverId}`, {
-      credentials: "include",
-    });
+    const res = await fetch(
+      `https://chat-app-backend-one-lemon.vercel.app/message/get/${receiverId}`,
+      {
+        credentials: "include",
+      }
+    );
 
     if (!res.ok) {
       const text = await res.text();

@@ -23,7 +23,7 @@ app.use(cookieParser());
 connectDB();
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://chat-app-beryl-three-91.vercel.app",
     credentials: true,
   })
 );
