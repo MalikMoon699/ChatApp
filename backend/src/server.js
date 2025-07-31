@@ -20,7 +20,7 @@ app.use(cookieParser());
 connectDB();
 app.use(
   cors({
-    origin: "https://chat-app-beryl-three-91.vercel.app",
+    origin: "https://chat-app-alpha-lyart.vercel.app",
     credentials: true,
   })
 );
