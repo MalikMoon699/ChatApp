@@ -9,7 +9,7 @@ import { dirname } from "path";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
-import { app, server } from "./sockets/server.js"; // Import app and server
+import { app, server } from "./sockets/server.js";
 
 dotenv.config();
 
