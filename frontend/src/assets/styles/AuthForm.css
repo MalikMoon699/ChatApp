@@ -2,11 +2,59 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   height: 100vh;
   width: 100vw;
   overflow: hidden;
   background: url(https://png.pngtree.com/background/20210716/original/pngtree-black-motion-white-lines-background-picture-image_1390764.jpg);
 }
+
+.note {
+  width: 500px;
+  text-align: center;
+  color: white;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff2e;
+  padding: 10px;
+  border-radius: 8px;
+  z-index: 9999;
+}
+
+/* Fade in from top */
+.fade-in {
+  animation: fadeInDown 0.4s ease forwards;
+}
+
+/* Fade out to top */
+.fade-out {
+  animation: fadeOutUp 0.4s ease forwards;
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes fadeOutUp {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+}
+
 
 .auth-form-container {
   box-shadow: 0px 0px 20px black;
@@ -126,9 +174,8 @@
   border-bottom: 1px solid #25a925;
 }
 
-
-.error-message{
-width: 100%;
-text-align: center;
-color: red;
+.error-message {
+  width: 100%;
+  text-align: center;
+  color: red;
 }

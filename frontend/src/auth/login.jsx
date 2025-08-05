@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../assets/styles/AuthForm.css";
 import { ArrowRight, Eye, EyeClosed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,23 @@ const Login = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [note, setNote] = useState(true);
+  const [fadeOut, setFadeOut] = useState(false);
+
+  useEffect(() => {
+    const timeout1 = setTimeout(() => {
+      setFadeOut(true);
+    }, 4500);
+
+    const timeout2 = setTimeout(() => {
+      setNote(false);
+    }, 5000);
+
+    return () => {
+      clearTimeout(timeout1);
+      clearTimeout(timeout2);
+    };
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,7 +41,7 @@ const Login = ({ setIsAuthenticated }) => {
 
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("userId", data.user.id); // Store userId
+        localStorage.setItem("userId", data.user.id);
         setIsAuthenticated(true);
         navigate("/");
       } else {
@@ -38,6 +55,13 @@ const Login = ({ setIsAuthenticated }) => {
 
   return (
     <div className="auth-container">
+     {note && (
+        <div className={`note ${fadeOut ? "fade-out" : "fade-in"}`}>
+          Due to high traffic on our site, we have temporarily taken the server
+          offline. We appreciate your patience and are working to restore
+          service as soon as possible.
+        </div>
+      )}
       <div className="auth-form-container">
         <h1 className="auth-title">
           Login to Chat <span>App</span>
