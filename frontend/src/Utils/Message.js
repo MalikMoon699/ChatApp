@@ -24,11 +24,12 @@ export const fetchCurrentUser = async () => {
   }
 };
 
-// Update other functions to use the correct backend URL
 export const fetchUsers = async (search = "") => {
   try {
     const res = await fetch(
-      `https://chat-app-gamma-sage.vercel.app/users?search=${search}`,
+      `https://chat-app-gamma-sage.vercel.app/users?search=${encodeURIComponent(
+        search
+      )}`,
       {
         credentials: "include",
         headers: {
@@ -39,6 +40,11 @@ export const fetchUsers = async (search = "") => {
 
     if (res.status === 401) {
       throw new Error("Unauthorized");
+    }
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Fetch failed: ${res.status} - ${text}`);
     }
 
     const data = await res.json();
@@ -61,7 +67,7 @@ export const handleLogout = async () => {
 
     return res.ok;
   } catch (err) {
-    console.error("Logout error", err);
+    console.error("Logout error", err.message);
     throw err;
   }
 };

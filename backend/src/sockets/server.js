@@ -8,9 +8,13 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://chat-app-teal-pi-taupe.vercel.app",
+    origin: [
+      "https://chat-app-teal-pi-taupe.vercel.app",
+      "http://localhost:3000",
+    ],
     methods: ["GET", "POST"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
 
@@ -25,12 +29,14 @@ io.use((socket, next) => {
   const userId = socket.handshake.query.userId;
 
   if (!userId || !token) {
+    console.error("Socket auth error: Missing userId or token");
     return next(new Error("Authentication error: Missing userId or token"));
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (decoded.id !== userId) {
+      console.error("Socket auth error: Token does not match userId");
       return next(new Error("Authentication error: Invalid token"));
     }
     socket.userId = userId;

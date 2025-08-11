@@ -1,4 +1,4 @@
-// SocketContext.jsx
+// context/SocketContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { fetchCurrentUser } from "../Utils/Message";

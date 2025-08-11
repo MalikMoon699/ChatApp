@@ -1,4 +1,4 @@
-// auth.routes.js
+// Routes/auth.routes.js
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import {
@@ -10,7 +10,7 @@ import {
   userdata,
   editProfileRoute,
   updateProfile,
-  currentUser,
+  currentUser, // Updated from currunetUser
   signUpValidation,
   loginValidation,
 } from "../Controllers/Auth.controller.js";

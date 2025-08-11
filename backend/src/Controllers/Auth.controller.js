@@ -1,11 +1,11 @@
-// Auth.controller.js
+// Controllers/Auth.controller.js
 import { generateCustomId } from "../Public/Utils/generateId.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
 import User from "../Models/Users_Models.js";
 
-
+// Validation middleware for signup
 export const signUpValidation = [
   body("name").trim().notEmpty().withMessage("Name is required"),
   body("email").isEmail().withMessage("Invalid email format"),
@@ -48,15 +48,19 @@ export const signUp = async (req, res) => {
 
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: newUser._id },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: "strict", // Enhanced security
+      sameSite: "strict",
     });
 
     res.json({
@@ -69,8 +73,8 @@ export const signUp = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Signup error:", error);
-    res.status(500).json({ msg: "Server error" });
+    console.error("Signup error:", error.message);
+    res.status(500).json({ msg: "Server error", error: error.message });
   }
 };
 
@@ -99,9 +103,13 @@ export const login = async (req, res) => {
       return res.status(400).json({ msg: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -120,12 +128,10 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ msg: "Server error" });
+    console.error("Login error:", error.message);
+    res.status(500).json({ msg: "Server error", error: error.message });
   }
 };
-
-// ... (other controller functions remain unchanged)
 
 export const currentUser = async (req, res) => {
   try {
@@ -134,30 +140,26 @@ export const currentUser = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     res.json(user);
-  } catch (err) {
-    console.error("Error fetching current user:", err);
-    res.status(500).json({ error: "Server error" });
+  } catch (error) {
+    console.error("Error fetching current user:", error.message);
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 
 export const userdata = async (req, res) => {
   try {
     const search = req.query.search || "";
-    const currentUserId = req.user?._id;
-
-    const query = {
+    const users = await User.find({
       $or: [
         { name: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
       ],
-      _id: { $ne: currentUserId },
-    };
-
-    const users = await User.find(query).select("-password");
-    res.status(200).json({ users });
+      _id: { $ne: req.user.id },
+    }).select("-password");
+    res.json({ users });
   } catch (error) {
     console.error("Error fetching users:", error.message);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 
