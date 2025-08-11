@@ -1,3 +1,4 @@
+// sockets/server.js
 import express from "express";
 import { Server } from "socket.io";
 import http from "http";
@@ -7,7 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://chat-app-alpha-lyart.vercel.app",
+    origin: "https://chat-app-teal-pi-taupe.vercel.app",
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -28,13 +29,11 @@ io.use((socket, next) => {
   }
 
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "supersecretkey"
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (decoded.id !== userId) {
       return next(new Error("Authentication error: Invalid token"));
     }
+    socket.userId = userId;
     next();
   } catch (err) {
     return next(new Error("Authentication error: Invalid token"));
@@ -44,7 +43,7 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
   console.log("⚡ New connection:", socket.id);
 
-  const userId = socket.handshake.query.userId;
+  const userId = socket.userId;
   if (userId) {
     users[userId] = socket.id;
     console.log("Registered user:", userId, socket.id);

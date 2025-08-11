@@ -1,3 +1,4 @@
+// Models.jsx
 import React from "react";
 import {
   CircleUserRound,
@@ -122,7 +123,6 @@ const Models = ({
       )}
 
       {/* ---------- Chat Page ------------ */}
-
       {!selectedContact ? (
         <div className="welcome-message">
           <img
@@ -152,7 +152,6 @@ const Models = ({
             <img
               src={selectedContact.profile_img || selectedContact.fallback_img}
             />
-
             <div className="chat-info">
               <h1>{selectedContact.name}</h1>
               <p
@@ -171,11 +170,7 @@ const Models = ({
                 <span>
                   <Lock size={13} color="#ffffffd1" />
                 </span>
-                <p>
-                  Messages and calls are end-to-end encrypted. Only people in
-                  this chat can read, listen to, or share them. Click to learn
-                  more
-                </p>
+                <p>Messages are end-to-end encrypted.</p>
               </div>
             </div>
             {messages.length > 0 ? (
@@ -185,7 +180,7 @@ const Models = ({
                   className={`${
                     msg.senderId === currentUser?._id
                       ? "send-message"
-                      : "recive-message"
+                      : "receive-message"
                   } message-container`}
                 >
                   <div className="message-content">
@@ -266,8 +261,7 @@ const Models = ({
                 </div>
               ))
             ) : (
-              <p className="empty-message"></p>
-              // <p className="empty-message">No messages yet</p>
+              <p className="empty-message">No messages yet</p>
             )}
           </div>
 

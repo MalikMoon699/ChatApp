@@ -1,4 +1,4 @@
-// Users_Models.js;
+// Users_Models.js
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  profile: { type: String },
+  profile_img: { type: String }, // Changed from 'profile' to 'profile_img'
 });
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);

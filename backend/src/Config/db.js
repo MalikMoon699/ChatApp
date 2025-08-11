@@ -10,11 +10,12 @@ const connectToDB = async () => {
         w: "majority",
         serverSelectionTimeoutMS: 5000,
         maxPoolSize: 10,
+        autoIndex: true,
       }
     );
     console.log("Connected to MongoDB Atlas");
   } catch (error) {
-    console.error("MongoDB connection error:", error);
+    console.error("MongoDB connection error:", error.message);
     process.exit(1);
   }
 };

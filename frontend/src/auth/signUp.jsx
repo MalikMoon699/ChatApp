@@ -1,3 +1,4 @@
+// SignUp.jsx
 import React, { useState } from "react";
 import "../assets/styles/AuthForm.css";
 import { ArrowRight, Eye, EyeClosed } from "lucide-react";
@@ -11,36 +12,38 @@ const SignUp = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState([]);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("https://chat-app-gamma-sage.vercel.app/signUp", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          confirm_password: confirmPassword,
-        }),
-      });
+      const res = await fetch(
+        "https://chat-app-teal-pi-taupe.vercel.app/signUp",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+            confirm_password: confirmPassword,
+          }),
+        }
+      );
 
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("userId", data.user.id); // Store userId
         setIsAuthenticated(true);
         navigate("/");
       } else {
-        setError(data.msg || "Signup failed");
+        setError(data.errors || [{ msg: data.msg || "Signup failed" }]);
       }
     } catch (error) {
       console.error("Signup error:", error);
-      setError("An error occurred. Please try again.");
+      setError([{ msg: "An error occurred. Please try again." }]);
     }
   };
 
@@ -50,7 +53,13 @@ const SignUp = ({ setIsAuthenticated }) => {
         <h1 className="auth-title">
           SignUp to Chat <span>App</span>
         </h1>
-        {error && <p className="error-message">{error}</p>}
+        {error.length > 0 && (
+          <div className="error-message">
+            {error.map((err, index) => (
+              <p key={index}>{err.msg}</p>
+            ))}
+          </div>
+        )}
         <form onSubmit={handleSignUp}>
           <div className="auth-input-container">
             <label>Name</label>

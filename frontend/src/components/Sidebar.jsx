@@ -1,3 +1,4 @@
+// Sidebar.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
@@ -5,6 +6,7 @@ import socket from "./Socket";
 import { fetchUsers, handleLogout } from "../Utils/Sidebar";
 import Models from "./Models";
 import Loader from "./Loader";
+import debounce from "lodash.debounce";
 
 const Sidebar = ({
   setSelectedContact,
@@ -21,22 +23,10 @@ const Sidebar = ({
   const [isDetail, setIsDetail] = useState(false);
   const [isLogout, setIsLogout] = useState(false);
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    fetchAllUsers();
-    socket.on("getOnlineUsers", (onlineUserIds) => {
-      setOnlineUsers(onlineUserIds);
-    });
-
-    return () => {
-      socket.off("getOnlineUsers");
-    };
-  }, [isAuthenticated]);
-
-  const fetchAllUsers = async () => {
+  const debouncedFetchUsers = debounce(async (value) => {
     try {
       setLoading(true);
-      const result = await fetchUsers(searchTerm);
+      const result = await fetchUsers(value);
       setUsers(result);
     } catch (err) {
       console.error("Error fetching users", err);
@@ -47,7 +37,20 @@ const Sidebar = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, 500);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    debouncedFetchUsers(searchTerm);
+    socket.on("getOnlineUsers", (onlineUserIds) => {
+      setOnlineUsers(onlineUserIds);
+    });
+
+    return () => {
+      socket.off("getOnlineUsers");
+      debouncedFetchUsers.cancel();
+    };
+  }, [isAuthenticated, searchTerm]);
 
   const handleLogoutClick = async () => {
     try {
@@ -93,11 +96,7 @@ const Sidebar = ({
             type="text"
             placeholder="Search by name or email"
             value={searchTerm}
-            onChange={(e) => {
-              const value = e.target.value;
-              setSearchTerm(value);
-              fetchUsers(value).then(setUsers).catch(console.error);
-            }}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
@@ -110,7 +109,7 @@ const Sidebar = ({
               <div
                 className="chat-item"
                 onClick={() => handleContactClick(user, index)}
-                key={user.id || index}
+                key={user._id || index}
                 style={{
                   background:
                     selectedContact?._id === (user._id || user.id)

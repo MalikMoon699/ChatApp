@@ -1,3 +1,4 @@
+// auth.routes.js
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import {
@@ -10,12 +11,14 @@ import {
   editProfileRoute,
   updateProfile,
   currunetUser,
+  signUpValidation,
+  loginValidation,
 } from "../Controllers/Auth.controller.js";
 
 const router = express.Router();
 
-router.post("/signUp", upload.single("profile"), signUp);
-router.post("/login", login);
+router.post("/signUp", upload.single("profile"), signUpValidation, signUp);
+router.post("/login", loginValidation, login);
 router.get("/api/auth/check", authMiddleware, (req, res) => {
   res.json({ isAuthenticated: true });
 });

@@ -1,3 +1,4 @@
+// src/server.js
 import express from "express";
 import connectDB from "./Config/db.js";
 import path from "path";
@@ -9,10 +10,18 @@ import { dirname } from "path";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
 import { app } from "./sockets/server.js";
 
 dotenv.config();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later.",
+});
+
+app.use(limiter);
 app.use(
   cors({
     origin: [
@@ -24,7 +33,6 @@ app.use(
   })
 );
 
-// Explicitly handle OPTIONS requests
 app.options(
   "*",
   cors({

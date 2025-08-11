@@ -1,3 +1,4 @@
+// SocketContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { fetchCurrentUser } from "../Utils/Message";
@@ -20,10 +21,13 @@ export const SocketProvider = ({ children }) => {
         const user = await fetchCurrentUser();
         if (!user?._id) return;
 
-        const socketInstance = io("https://chat-app-gamma-sage.vercel.app", {
+        const socketInstance = io("https://chat-app-teal-pi-taupe.vercel.app", {
           query: { userId: user._id },
           auth: { token },
           transports: ["websocket"],
+          reconnection: true,
+          reconnectionAttempts: 5,
+          reconnectionDelay: 1000,
         });
 
         socketInstance.on("connect", () => {

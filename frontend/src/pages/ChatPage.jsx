@@ -1,3 +1,4 @@
+// ChatPage.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { useSocketContext } from "../context/SocketContext";
 import Sidebar from "../components/Sidebar";
@@ -65,6 +66,9 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
 
     socket.on("connect_error", (error) => {
       console.error("Socket connection error:", error.message);
+      if (error.message.includes("Authentication error")) {
+        setIsAuthenticated(false);
+      }
     });
 
     return () => {
@@ -73,7 +77,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
       socket.off("messageDeleted");
       socket.off("connect_error");
     };
-  }, [socket, selectedContact]);
+  }, [socket, selectedContact, setIsAuthenticated]);
 
   const handleCurrentUser = async () => {
     try {
@@ -81,7 +85,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
       setCurrentUser(res);
     } catch (error) {
       console.error("Error fetching current user:", error.message);
-      setIsAuthenticated(false); // Log out if user fetch fails
+      setIsAuthenticated(false);
     }
   };
 
@@ -103,8 +107,8 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
         senderId: currentUser._id,
         message,
       });
+      setMessages((prev) => [...prev, response.newMessage]);
       setMessage("");
-      await handleGetMessages();
     } catch (error) {
       console.error("Error sending message:", error.message);
     }
@@ -112,8 +116,8 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(
-        "https://chat-app-gamma-sage.vercel.app/message/delete/${id}",
+      const res = await fetch(
+        `https://chat-app-teal-pi-taupe.vercel.app/message/delete/${id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -122,14 +126,19 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
         }
       );
 
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to delete message");
+      }
+
       socket.emit("messageDeleted", {
         messageId: id,
         receiverId: selectedContact._id,
       });
 
-      await handleGetMessages();
+      setMessages((prev) => prev.filter((msg) => msg._id !== id));
     } catch (error) {
-      console.error("Delete failed:", error);
+      console.error("Delete failed:", error.message);
     }
   };
 
@@ -138,7 +147,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
 
     try {
       const res = await fetch(
-        `https://chat-app-gamma-sage.vercel.app/message/update/${id}`,
+        `https://chat-app-teal-pi-taupe.vercel.app/message/update/${id}`,
         {
           method: "PUT",
           headers: {
@@ -153,8 +162,8 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
       );
 
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Edit failed");
+        const data = await res.json();
+        throw new Error(data.error || "Edit failed");
       }
 
       socket.emit("messageUpdated", {
@@ -163,9 +172,13 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
         receiverId: selectedContact._id,
       });
 
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === id ? { ...msg, message: editValue } : msg
+        )
+      );
       setEditingId(null);
       setEditValue("");
-      await handleGetMessages();
     } catch (err) {
       console.error("Edit Error:", err.message);
       alert("Edit failed: " + err.message);

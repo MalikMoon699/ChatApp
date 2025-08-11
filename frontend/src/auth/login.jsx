@@ -1,3 +1,4 @@
+// Login.jsx
 import React, { useEffect, useState } from "react";
 import "../assets/styles/AuthForm.css";
 import { ArrowRight, Eye, EyeClosed } from "lucide-react";
@@ -8,7 +9,7 @@ const Login = ({ setIsAuthenticated }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState([]);
   const [note, setNote] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
 
@@ -30,32 +31,34 @@ const Login = ({ setIsAuthenticated }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("https://chat-app-gamma-sage.vercel.app/login", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await fetch(
+        "https://chat-app-teal-pi-taupe.vercel.app/login",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("userId", data.user.id);
         setIsAuthenticated(true);
         navigate("/");
       } else {
-        setError(data.msg || "Login failed");
+        setError(data.errors || [{ msg: data.msg || "Login failed" }]);
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError("An error occurred. Please try again.");
+      setError([{ msg: "An error occurred. Please try again." }]);
     }
   };
 
   return (
     <div className="auth-container">
-     {note && (
+      {note && (
         <div className={`note ${fadeOut ? "fade-out" : "fade-in"}`}>
           Due to high traffic on our site, we have temporarily taken the server
           offline. We appreciate your patience and are working to restore
@@ -66,7 +69,13 @@ const Login = ({ setIsAuthenticated }) => {
         <h1 className="auth-title">
           Login to Chat <span>App</span>
         </h1>
-        {error && <p className="error-message">{error}</p>}
+        {error.length > 0 && (
+          <div className="error-message">
+            {error.map((err, index) => (
+              <p key={index}>{err.msg}</p>
+            ))}
+          </div>
+        )}
         <form onSubmit={handleLogin}>
           <div className="auth-input-container">
             <label>Email Address</label>
