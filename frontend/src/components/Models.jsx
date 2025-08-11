@@ -1,4 +1,3 @@
-// Models.jsx
 import React from "react";
 import {
   CircleUserRound,
@@ -44,16 +43,14 @@ const Models = ({
 }) => {
   return (
     <div>
-      {/* ----------- Sidebar ------------ */}
+      {/* User Profile Modal */}
       {isDetail && (
         <div className="model-overlay">
           <div className="model-content">
             <div className="model-header">
               <button
                 className="back-button"
-                onClick={() => {
-                  setIsDetail(false);
-                }}
+                onClick={() => setIsDetail(false)}
               >
                 ❮
               </button>
@@ -63,8 +60,10 @@ const Models = ({
               <div className="model-img">
                 <img
                   src={
-                    currentUser?.profile_img || "https://picsum.photos/200/300"
+                    currentUser?.profile_img ||
+                    `https://ui-avatars.com/api/?name=${currentUser?.name}&background=random`
                   }
+                  alt={currentUser?.name}
                 />
               </div>
               <div className="current_user_card_details-container">
@@ -77,12 +76,7 @@ const Models = ({
                   {currentUser?.email}
                 </p>
               </div>
-              <button
-                className="logout-btn"
-                onClick={() => {
-                  setIsLogout(true);
-                }}
-              >
+              <button className="logout-btn" onClick={() => setIsLogout(true)}>
                 logout <LogOut size={20} />
               </button>
             </div>
@@ -90,43 +84,27 @@ const Models = ({
         </div>
       )}
 
+      {/* Logout Confirmation Modal */}
       {isLogout && (
-        <div
-          className="model-overlay"
-          onClick={() => {
-            setIsMore(false);
-            setIsDelete(false);
-            setSelectedMsg(null);
-          }}
-        >
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            className="model-logout"
-          >
+        <div className="model-overlay">
+          <div className="model-logout">
             <TriangleAlert color="red" size={60} />
             <h3>Come Back Soon!!!</h3>
             <p>Are you sure you want to logout?</p>
             <div className="logout-btn-container">
-              <button
-                onClick={() => {
-                  setIsLogout(false);
-                }}
-              >
-                cancel
-              </button>
+              <button onClick={() => setIsLogout(false)}>cancel</button>
               <button onClick={handleLogoutClick}>logout</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ---------- Chat Page ------------ */}
+      {/* Chat Interface */}
       {!selectedContact ? (
         <div className="welcome-message">
           <img
             src={welcomeIcon}
+            alt="Welcome"
             style={{
               height: "300px",
               objectFit: "cover",
@@ -150,8 +128,13 @@ const Models = ({
               ❮
             </button>
             <img
-              src={selectedContact.profile_img || selectedContact.fallback_img}
+              src={
+                selectedContact.profile_img ||
+                `https://ui-avatars.com/api/?name=${selectedContact.name}&background=random`
+              }
+              alt={selectedContact.name}
             />
+
             <div className="chat-info">
               <h1>{selectedContact.name}</h1>
               <p
@@ -170,17 +153,20 @@ const Models = ({
                 <span>
                   <Lock size={13} color="#ffffffd1" />
                 </span>
-                <p>Messages are end-to-end encrypted.</p>
+                <p>
+                  Messages are end-to-end encrypted. Only people in this chat
+                  can read them.
+                </p>
               </div>
             </div>
             {messages.length > 0 ? (
-              messages.map((msg, index) => (
+              messages.map((msg) => (
                 <div
-                  key={index}
+                  key={msg._id}
                   className={`${
                     msg.senderId === currentUser?._id
                       ? "send-message"
-                      : "receive-message"
+                      : "recive-message"
                   } message-container`}
                 >
                   <div className="message-content">
@@ -202,26 +188,18 @@ const Models = ({
                     )}
                     <div className="message">
                       {editingId === msg._id ? (
-                        <div className="model-overlay">
-                          <div
-                            className="chat-box"
-                            style={{
-                              width: "700px",
-                              borderRadius: "10px",
-                              border: "1px solid #b259fd",
-                            }}
-                          >
-                            <input
-                              value={editValue}
-                              onChange={(e) => setEditValue(e.target.value)}
-                            />
-                            <span onClick={() => setEditingId(null)}>
-                              <X />
-                            </span>
-                            <span onClick={() => handleEdit(msg._id)}>
-                              <SendHorizontal />
-                            </span>
-                          </div>
+                        <div className="edit-message-box">
+                          <input
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            autoFocus
+                          />
+                          <span onClick={() => setEditingId(null)}>
+                            <X />
+                          </span>
+                          <span onClick={() => handleEdit(msg._id)}>
+                            <SendHorizontal />
+                          </span>
                         </div>
                       ) : (
                         <p>{msg.message}</p>
@@ -283,14 +261,10 @@ const Models = ({
         </>
       )}
 
+      {/* Contact Details Modal */}
       {detailsModel && (
         <div className="model-overlay" onClick={() => setDetailsModel(false)}>
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            className="model-content"
-          >
+          <div className="model-content">
             <div className="model-header">
               <button
                 onClick={() => setDetailsModel(false)}
@@ -298,34 +272,36 @@ const Models = ({
               >
                 ❮
               </button>
-              <h3 className="model-title">About {selectedContact.name}</h3>
+              <h3 className="model-title">About {selectedContact?.name}</h3>
             </div>
             <div className="model-info">
               <img
                 src={
-                  selectedContact.profile_img || selectedContact.fallback_img
+                  selectedContact?.profile_img ||
+                  `https://ui-avatars.com/api/?name=${selectedContact?.name}&background=random`
                 }
+                alt={selectedContact?.name}
               />
               <div className="user_card_details-container">
                 <p className="user_card_details">
                   <strong>Name</strong>
                   <span className="dashed-line"></span>
-                  {selectedContact.name}
+                  {selectedContact?.name}
                 </p>
                 <p className="user_card_details">
                   <strong>Email</strong>
                   <span className="dashed-line"></span>
-                  {selectedContact.email}
+                  {selectedContact?.email}
                 </p>
                 <p
                   style={{
-                    color: selectedContact.isOnline ? "green" : "red",
+                    color: selectedContact?.isOnline ? "green" : "red",
                   }}
                   className="user_card_details"
                 >
                   <strong>Status</strong>
                   <span className="dashed-line"></span>
-                  {selectedContact.isOnline ? "Online" : "Offline"}
+                  {selectedContact?.isOnline ? "Online" : "Offline"}
                 </p>
               </div>
             </div>
@@ -333,21 +309,10 @@ const Models = ({
         </div>
       )}
 
+      {/* Delete Message Confirmation Modal */}
       {isDelete && selectedMsg && (
-        <div
-          className="model-overlay"
-          onClick={() => {
-            setIsMore(false);
-            setIsDelete(false);
-            setSelectedMsg(null);
-          }}
-        >
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            className="model-logout"
-          >
+        <div className="model-overlay">
+          <div className="model-logout">
             <TriangleAlert color="red" size={60} />
             <h3>Confirm Delete!!!</h3>
             <p>Are you sure you want to delete this message?</p>
@@ -364,9 +329,6 @@ const Models = ({
               <button
                 onClick={() => {
                   handleDelete(selectedMsg._id);
-                  setIsMore(false);
-                  setIsDelete(false);
-                  setSelectedMsg(null);
                 }}
               >
                 delete

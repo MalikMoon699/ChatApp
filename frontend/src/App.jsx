@@ -1,4 +1,3 @@
-// App.jsx
 import { useState, useEffect } from "react";
 import Home from "./pages/ChatPage";
 import Login from "./auth/login";
@@ -16,19 +15,16 @@ function App() {
     const checkAuth = async () => {
       try {
         const response = await fetch(
-          "https://chat-app-teal-pi-taupe.vercel.app/api/auth/check",
+          "https://chat-app-gamma-sage.vercel.app/api/auth/check",
           {
             credentials: "include",
           }
         );
         if (response.ok) {
           setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
         }
       } catch (error) {
         console.error("Auth check failed:", error);
-        setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }

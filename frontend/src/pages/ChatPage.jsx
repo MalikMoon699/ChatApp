@@ -1,4 +1,3 @@
-// ChatPage.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { useSocketContext } from "../context/SocketContext";
 import Sidebar from "../components/Sidebar";
@@ -8,6 +7,8 @@ import {
   sendMessage as sendMsgAPI,
   fetchCurrentUser,
   fetchMessages as fetchMsgsAPI,
+  deleteMessage as deleteMsgAPI,
+  updateMessage as updateMsgAPI,
 } from "../Utils/Message";
 import Models from "../components/Models";
 
@@ -46,7 +47,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("receiveMessage", (newMsg) => {
+    socket.on("newMessage", (newMsg) => {
       if (selectedContact && newMsg.senderId === selectedContact._id) {
         setMessages((prev) => [...prev, newMsg]);
       }
@@ -66,18 +67,15 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
 
     socket.on("connect_error", (error) => {
       console.error("Socket connection error:", error.message);
-      if (error.message.includes("Authentication error")) {
-        setIsAuthenticated(false);
-      }
     });
 
     return () => {
-      socket.off("receiveMessage");
+      socket.off("newMessage");
       socket.off("messageUpdated");
       socket.off("messageDeleted");
       socket.off("connect_error");
     };
-  }, [socket, selectedContact, setIsAuthenticated]);
+  }, [socket, selectedContact]);
 
   const handleCurrentUser = async () => {
     try {
@@ -101,14 +99,9 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
   const sendMessages = async () => {
     if (!message.trim()) return;
     try {
-      const response = await sendMsgAPI(selectedContact._id, message);
-      socket?.emit("sendMessage", {
-        receiverId: selectedContact._id,
-        senderId: currentUser._id,
-        message,
-      });
-      setMessages((prev) => [...prev, response.newMessage]);
+      await sendMsgAPI(selectedContact._id, message);
       setMessage("");
+      await handleGetMessages();
     } catch (error) {
       console.error("Error sending message:", error.message);
     }
@@ -116,68 +109,22 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(
-        `https://chat-app-gamma-sage.vercel.app/message/delete/${id}`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ receiverId: selectedContact._id }),
-        }
-      );
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to delete message");
-      }
-
-      socket.emit("messageDeleted", {
-        messageId: id,
-        receiverId: selectedContact._id,
-      });
-
-      setMessages((prev) => prev.filter((msg) => msg._id !== id));
+      await deleteMsgAPI(id, selectedContact._id);
+      await handleGetMessages();
+      setIsDelete(false);
+      setSelectedMsg(null);
     } catch (error) {
-      console.error("Delete failed:", error.message);
+      console.error("Delete failed:", error);
     }
   };
 
   const handleEdit = async (id) => {
+    if (!editValue.trim()) return alert("Message cannot be empty");
     try {
-      const res = await fetch(
-        `https://chat-app-gamma-sage.vercel.app/message/update/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            newContent: editValue,
-            receiverId: selectedContact._id,
-          }),
-        }
-      );
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Edit failed");
-      }
-
-      socket.emit("messageUpdated", {
-        messageId: id,
-        newContent: editValue,
-        receiverId: selectedContact._id,
-      });
-
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg._id === id ? { ...msg, message: editValue } : msg
-        )
-      );
+      await updateMsgAPI(id, editValue, selectedContact._id);
       setEditingId(null);
       setEditValue("");
+      await handleGetMessages();
     } catch (err) {
       console.error("Edit Error:", err.message);
       alert("Edit failed: " + err.message);
@@ -233,7 +180,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
       {isDelete && selectedMsg && (
         <Models
           isDelete={isDelete}
-          Toroject={selectedMsg}
+          selectedMsg={selectedMsg}
           setIsMore={setIsMore}
           setIsDelete={setIsDelete}
           setSelectedMsg={setSelectedMsg}

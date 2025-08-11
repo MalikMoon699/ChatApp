@@ -1,12 +1,9 @@
-// Sidebar.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import socket from "./Socket";
-import { fetchUsers, handleLogout } from "../Utils/Sidebar";
+import { fetchUsers, handleLogout } from "../Utils/Message";
 import Models from "./Models";
 import Loader from "./Loader";
-import debounce from "lodash.debounce";
 
 const Sidebar = ({
   setSelectedContact,
@@ -23,10 +20,27 @@ const Sidebar = ({
   const [isDetail, setIsDetail] = useState(false);
   const [isLogout, setIsLogout] = useState(false);
 
-  const debouncedFetchUsers = debounce(async (value) => {
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    fetchAllUsers();
+
+    const socket = new WebSocket("wss://chat-app-gamma-sage.vercel.app");
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === "onlineUsers") {
+        setOnlineUsers(data.users);
+      }
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, [isAuthenticated]);
+
+  const fetchAllUsers = async () => {
     try {
       setLoading(true);
-      const result = await fetchUsers(value);
+      const result = await fetchUsers(searchTerm);
       setUsers(result);
     } catch (err) {
       console.error("Error fetching users", err);
@@ -37,20 +51,7 @@ const Sidebar = ({
     } finally {
       setLoading(false);
     }
-  }, 500);
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    debouncedFetchUsers(searchTerm);
-    socket.on("getOnlineUsers", (onlineUserIds) => {
-      setOnlineUsers(onlineUserIds);
-    });
-
-    return () => {
-      socket.off("getOnlineUsers");
-      debouncedFetchUsers.cancel();
-    };
-  }, [isAuthenticated, searchTerm]);
+  };
 
   const handleLogoutClick = async () => {
     try {
@@ -58,21 +59,16 @@ const Sidebar = ({
       if (success) {
         setIsAuthenticated(false);
         navigate("/login");
-      } else {
-        console.error("Logout failed");
       }
     } catch (err) {
       console.error("Logout error", err);
     }
   };
 
-  const handleContactClick = (user, index) => {
-    const fallbackImg = `https://picsum.photos/200/30${index + 1}`;
+  const handleContactClick = (user) => {
     const isOnline = onlineUsers.includes(user._id);
-
     setSelectedContact({
       ...user,
-      fallback_img: fallbackImg,
       isOnline: isOnline,
     });
   };
@@ -96,29 +92,27 @@ const Sidebar = ({
             type="text"
             placeholder="Search by name or email"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchTerm(value);
+              fetchUsers(value).then(setUsers).catch(console.error);
+            }}
           />
         </div>
       </div>
 
       <div className="sidebar-chats">
         {users && users.length > 0 ? (
-          users.map((user, index) => {
-            const isOnline = onlineUsers.includes(user._id || user.id);
+          users.map((user) => {
+            const isOnline = onlineUsers.includes(user._id);
             return (
               <div
                 className="chat-item"
-                onClick={() => handleContactClick(user, index)}
-                key={user._id || index}
+                onClick={() => handleContactClick(user)}
+                key={user._id}
                 style={{
-                  background:
-                    selectedContact?._id === (user._id || user.id)
-                      ? "white"
-                      : "",
-                  color:
-                    selectedContact?._id === (user._id || user.id)
-                      ? "black"
-                      : "",
+                  background: selectedContact?._id === user._id ? "white" : "",
+                  color: selectedContact?._id === user._id ? "black" : "",
                 }}
               >
                 <div
@@ -133,8 +127,9 @@ const Sidebar = ({
                     className="sidebar-chat-img"
                     src={
                       user.profile_img ||
-                      `https://picsum.photos/200/30${index + 1}`
+                      `https://ui-avatars.com/api/?name=${user.name}&background=random`
                     }
+                    alt={user.name}
                   />
                 </div>
                 <div className="sidebar-chat-info">
@@ -149,14 +144,12 @@ const Sidebar = ({
         )}
       </div>
 
-      <div
-        className="sidebar-bottom"
-        onClick={() => {
-          setIsDetail(true);
-        }}
-      >
+      <div className="sidebar-bottom" onClick={() => setIsDetail(true)}>
         <img
-          src={currentUser?.profile_img || "https://picsum.photos/200/300"}
+          src={
+            currentUser?.profile_img ||
+            `https://ui-avatars.com/api/?name=${currentUser?.name}&background=random`
+          }
           className="sidebar-chat-img"
           alt="Logged user"
         />

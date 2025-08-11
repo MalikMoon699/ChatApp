@@ -1,4 +1,3 @@
-// Socket.jsx
 import { io } from "socket.io-client";
 
 const token = document.cookie
@@ -7,11 +6,11 @@ const token = document.cookie
   ?.split("=")[1];
 
 const socket = io("https://chat-app-gamma-sage.vercel.app", {
+  query: {
+    userId: localStorage.getItem("userId"),
+  },
   auth: { token },
   transports: ["websocket"],
-  reconnection: true,
-  reconnectionAttempts: 5,
-  reconnectionDelay: 1000,
 });
 
 export default socket;

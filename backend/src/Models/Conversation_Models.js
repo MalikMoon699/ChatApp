@@ -1,20 +1,17 @@
-// Conversation_Models.js
 import mongoose from "mongoose";
-import User from "./Users_Models.js";
-import Message from "./Message_Models.js";
 
 const conversationSchema = new mongoose.Schema(
   {
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: User,
+        ref: "User",
       },
     ],
     messages: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: Message,
+        ref: "Message",
         default: [],
       },
     ],

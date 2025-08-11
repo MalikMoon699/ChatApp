@@ -1,4 +1,3 @@
-// context/SocketContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { fetchCurrentUser } from "../Utils/Message";
@@ -16,24 +15,15 @@ export const SocketProvider = ({ children }) => {
           .find((row) => row.startsWith("token="))
           ?.split("=")[1];
 
-        if (!token) {
-          console.error("No token found, cannot initialize socket");
-          return;
-        }
+        if (!token) return;
 
         const user = await fetchCurrentUser();
-        if (!user?._id) {
-          console.error("No user ID found, cannot initialize socket");
-          return;
-        }
+        if (!user?._id) return;
 
         const socketInstance = io("https://chat-app-gamma-sage.vercel.app", {
           query: { userId: user._id },
           auth: { token },
           transports: ["websocket"],
-          reconnection: true,
-          reconnectionAttempts: 5,
-          reconnectionDelay: 1000,
         });
 
         socketInstance.on("connect", () => {
@@ -50,7 +40,7 @@ export const SocketProvider = ({ children }) => {
           socketInstance.disconnect();
         };
       } catch (error) {
-        console.error("Socket setup error:", error.message);
+        console.error("Socket setup error:", error);
       }
     };
 

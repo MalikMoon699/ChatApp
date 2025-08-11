@@ -1,4 +1,3 @@
-// SignUp.jsx
 import React, { useState } from "react";
 import "../assets/styles/AuthForm.css";
 import { ArrowRight, Eye, EyeClosed } from "lucide-react";
@@ -12,17 +11,23 @@ const SignUp = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
     try {
       const res = await fetch("https://chat-app-gamma-sage.vercel.app/signUp", {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         body: JSON.stringify({
           name,
@@ -37,11 +42,13 @@ const SignUp = ({ setIsAuthenticated }) => {
         setIsAuthenticated(true);
         navigate("/");
       } else {
-        setError(data.errors || [{ msg: data.msg || "Signup failed" }]);
+        setError(data.msg || "Signup failed");
       }
     } catch (error) {
       console.error("Signup error:", error);
-      setError([{ msg: "An error occurred. Please try again." }]);
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,13 +58,7 @@ const SignUp = ({ setIsAuthenticated }) => {
         <h1 className="auth-title">
           SignUp to Chat <span>App</span>
         </h1>
-        {error.length > 0 && (
-          <div className="error-message">
-            {error.map((err, index) => (
-              <p key={index}>{err.msg}</p>
-            ))}
-          </div>
-        )}
+        {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSignUp}>
           <div className="auth-input-container">
             <label>Name</label>
@@ -68,7 +69,6 @@ const SignUp = ({ setIsAuthenticated }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              autoComplete="name"
             />
           </div>
           <div className="auth-input-container">
@@ -80,7 +80,6 @@ const SignUp = ({ setIsAuthenticated }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoComplete="email"
             />
           </div>
           <div className="auth-input-container">
@@ -93,7 +92,6 @@ const SignUp = ({ setIsAuthenticated }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                autoComplete="new-password"
               />
               <div
                 onClick={() => setShowPassword((prev) => !prev)}
@@ -113,7 +111,6 @@ const SignUp = ({ setIsAuthenticated }) => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                autoComplete="new-password"
               />
               <div
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
@@ -123,8 +120,8 @@ const SignUp = ({ setIsAuthenticated }) => {
               </div>
             </div>
           </div>
-          <button type="submit" className="submit-button">
-            SignUp{" "}
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? "Signing up..." : "SignUp"}{" "}
             <span>
               <ArrowRight />
             </span>

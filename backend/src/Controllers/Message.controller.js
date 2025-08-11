@@ -1,19 +1,8 @@
-// Message.controller.js
-import { body, validationResult } from "express-validator";
 import Conversation from "../Models/Conversation_Models.js";
 import Message from "../Models/Message_Models.js";
 import { io, getReceiverSocketId } from "../sockets/server.js";
 
-export const sendMessageValidation = [
-  body("message").trim().notEmpty().withMessage("Message cannot be empty"),
-];
-
 export const sendMessage = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
   try {
     const { message } = req.body;
     const { id: receiverId } = req.params;
@@ -35,25 +24,21 @@ export const sendMessage = async (req, res) => {
       message,
     });
 
-    conversation.messages.push(newMessage._id);
-    conversation.lastMessageTime = new Date();
+    if (newMessage) {
+      conversation.messages.push(newMessage._id);
+      conversation.lastMessageTime = new Date();
+    }
 
     await Promise.all([conversation.save(), newMessage.save()]);
 
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("receiveMessage", {
-        ...newMessage.toObject(),
-        createdAt: new Date(),
-      });
+      io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
-    res.status(201).json({
-      message: `Message id:${newMessage._id} sent successfully for conversation with id: ${conversation._id}`,
-      newMessage,
-    });
+    res.status(201).json(newMessage);
   } catch (error) {
-    console.error("Error in sendMessage:", error);
+    console.log("Error in sendMessage", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -73,7 +58,7 @@ export const getMessage = async (req, res) => {
 
     res.status(200).json(conversation.messages);
   } catch (error) {
-    console.error("Error in getMessage:", error);
+    console.log("Error in getMessage", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -82,57 +67,24 @@ export const deleteMessage = async (req, res) => {
   try {
     const { id } = req.params;
     const { receiverId } = req.body;
-    const senderId = req.user._id;
-
-    const message = await Message.findOne({ _id: id, senderId });
-    if (!message) {
-      return res
-        .status(403)
-        .json({ error: "You can only delete your own messages" });
-    }
 
     await Message.findByIdAndDelete(id);
 
-    await Conversation.updateMany(
-      { messages: id },
-      { $pull: { messages: id } }
-    );
-
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("messageDeleted", {
-        messageId: id,
-      });
+      io.to(receiverSocketId).emit("messageDeleted", { messageId: id });
     }
 
     res.status(200).json({ success: true });
-  } catch (error) {
-    console.error("Error in deleteMessage:", error);
-    res.status(500).json({ error: "Internal server error" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete message" });
   }
 };
 
-export const updateMessageValidation = [
-  body("newContent").trim().notEmpty().withMessage("Message cannot be empty"),
-];
-
 export const updateMessage = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
   try {
     const { id } = req.params;
     const { newContent, receiverId } = req.body;
-    const senderId = req.user._id;
-
-    const message = await Message.findOne({ _id: id, senderId });
-    if (!message) {
-      return res
-        .status(403)
-        .json({ error: "You can only edit your own messages" });
-    }
 
     const updatedMessage = await Message.findByIdAndUpdate(
       id,
@@ -149,8 +101,7 @@ export const updateMessage = async (req, res) => {
     }
 
     res.status(200).json(updatedMessage);
-  } catch (error) {
-    console.error("Error in updateMessage:", error);
-    res.status(500).json({ error: "Internal server error" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update message" });
   }
 };
