@@ -23,12 +23,10 @@
   z-index: 9999;
 }
 
-/* Fade in from top */
 .fade-in {
   animation: fadeInDown 0.4s ease forwards;
 }
 
-/* Fade out to top */
 .fade-out {
   animation: fadeOutUp 0.4s ease forwards;
 }

@@ -28,7 +28,10 @@ io.use((socket, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "supersecretkey"
+    );
     if (decoded.id !== userId) {
       return next(new Error("Authentication error: Invalid token"));
     }

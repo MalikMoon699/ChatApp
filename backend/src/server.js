@@ -9,21 +9,39 @@ import { dirname } from "path";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
-import { app, server } from "./sockets/server.js";
+import { app } from "./sockets/server.js";
 
 dotenv.config();
+
+app.use(
+  cors({
+    origin: [
+      "https://kfcclone-five.vercel.app",
+      "https://kfcclone-three.vercel.app",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+  })
+);
+
+// Explicitly handle OPTIONS requests
+app.options(
+  "*",
+  cors({
+    origin: [
+      "https://kfcclone-five.vercel.app",
+      "https://kfcclone-three.vercel.app",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+  })
+);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 app.use(cookieParser());
 connectDB();
-app.use(
-  cors({
-    origin: "https://chat-app-alpha-lyart.vercel.app",
-    credentials: true,
-  })
-);
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
@@ -32,5 +50,4 @@ app.use("/", authRoutes);
 app.use("/message", messageRoutes);
 app.use("/api", dashboardRoutes);
 
-// Export for Vercel
 export default app;
