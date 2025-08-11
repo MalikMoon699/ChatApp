@@ -1,7 +1,7 @@
 export const sendMessage = async (receiverId, message) => {
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/message/send/${receiverId}`,
+      `https://chat-app-gamma-sage.vercel.app/message/send/${receiverId}`,
       {
         method: "POST",
         headers: {
@@ -28,7 +28,7 @@ export const sendMessage = async (receiverId, message) => {
 export const fetchCurrentUser = async () => {
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/current-user`,
+      "https://chat-app-gamma-sage.vercel.app/current-user",
       {
         credentials: "include",
       }
@@ -50,7 +50,7 @@ export const fetchCurrentUser = async () => {
 export const fetchMessages = async (receiverId) => {
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/message/get/${receiverId}`,
+      `https://chat-app-gamma-sage.vercel.app/message/get/${receiverId}`,
       {
         credentials: "include",
       }

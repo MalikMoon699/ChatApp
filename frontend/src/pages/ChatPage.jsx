@@ -112,12 +112,15 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`${import.meta.env.VITE_BACKEND_URL}/message/delete/${id}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ receiverId: selectedContact._id }),
-      });
+      await fetch(
+        "https://chat-app-gamma-sage.vercel.app/message/delete/${id}",
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ receiverId: selectedContact._id }),
+        }
+      );
 
       socket.emit("messageDeleted", {
         messageId: id,
@@ -135,7 +138,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/message/update/${id}`,
+        `https://chat-app-gamma-sage.vercel.app/message/update/${id}`,
         {
           method: "PUT",
           headers: {

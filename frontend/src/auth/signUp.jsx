@@ -16,7 +16,7 @@ const SignUp = ({ setIsAuthenticated }) => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/signUp`, {
+      const res = await fetch("https://chat-app-gamma-sage.vercel.app/signUp", {
         method: "POST",
         credentials: "include",
         headers: {

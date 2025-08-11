@@ -5,7 +5,7 @@ const token = document.cookie
   .find((row) => row.startsWith("token="))
   ?.split("=")[1];
 
-const socket = io(import.meta.env.VITE_BACKEND_URL, {
+const socket = io("https://chat-app-gamma-sage.vercel.app", {
   query: {
     userId: localStorage.getItem("userId"),
   },

@@ -16,8 +16,8 @@ dotenv.config();
 app.use(
   cors({
     origin: [
-      "https://kfcclone-five.vercel.app",
-      "https://kfcclone-three.vercel.app",
+      "https://chat-app-teal-pi-taupe.vercel.app",
+      "https://chat-app-gamma-sage.vercel.app",
       "http://localhost:3000",
     ],
     credentials: true,
@@ -29,8 +29,8 @@ app.options(
   "*",
   cors({
     origin: [
-      "https://kfcclone-five.vercel.app",
-      "https://kfcclone-three.vercel.app",
+      "https://chat-app-teal-pi-taupe.vercel.app",
+      "https://chat-app-gamma-sage.vercel.app",
       "http://localhost:3000",
     ],
     credentials: true,
