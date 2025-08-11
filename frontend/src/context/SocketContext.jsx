@@ -16,12 +16,18 @@ export const SocketProvider = ({ children }) => {
           .find((row) => row.startsWith("token="))
           ?.split("=")[1];
 
-        if (!token) return;
+        if (!token) {
+          console.error("No token found, cannot initialize socket");
+          return;
+        }
 
         const user = await fetchCurrentUser();
-        if (!user?._id) return;
+        if (!user?._id) {
+          console.error("No user ID found, cannot initialize socket");
+          return;
+        }
 
-        const socketInstance = io("https://chat-app-teal-pi-taupe.vercel.app", {
+        const socketInstance = io("https://chat-app-gamma-sage.vercel.app", {
           query: { userId: user._id },
           auth: { token },
           transports: ["websocket"],
@@ -44,7 +50,7 @@ export const SocketProvider = ({ children }) => {
           socketInstance.disconnect();
         };
       } catch (error) {
-        console.error("Socket setup error:", error);
+        console.error("Socket setup error:", error.message);
       }
     };
 

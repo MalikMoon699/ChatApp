@@ -31,17 +31,15 @@ const Login = ({ setIsAuthenticated }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(
-        "https://chat-app-teal-pi-taupe.vercel.app/login",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const res = await fetch("https://chat-app-gamma-sage.vercel.app/login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await res.json();
       if (res.ok) {
@@ -86,6 +84,7 @@ const Login = ({ setIsAuthenticated }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
             />
           </div>
           <div className="auth-input-container">
@@ -98,6 +97,7 @@ const Login = ({ setIsAuthenticated }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="current-password"
               />
               <div
                 onClick={() => setShowPassword((prev) => !prev)}

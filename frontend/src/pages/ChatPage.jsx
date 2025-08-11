@@ -117,7 +117,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
   const handleDelete = async (id) => {
     try {
       const res = await fetch(
-        `https://chat-app-teal-pi-taupe.vercel.app/message/delete/${id}`,
+        `https://chat-app-gamma-sage.vercel.app/message/delete/${id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -143,15 +143,14 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
   };
 
   const handleEdit = async (id) => {
-    if (!editValue.trim()) return alert("Message cannot be empty");
-
     try {
       const res = await fetch(
-        `https://chat-app-teal-pi-taupe.vercel.app/message/update/${id}`,
+        `https://chat-app-gamma-sage.vercel.app/message/update/${id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
           credentials: "include",
           body: JSON.stringify({
@@ -234,7 +233,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
       {isDelete && selectedMsg && (
         <Models
           isDelete={isDelete}
-          selectedMsg={selectedMsg}
+          Toroject={selectedMsg}
           setIsMore={setIsMore}
           setIsDelete={setIsDelete}
           setSelectedMsg={setSelectedMsg}

@@ -17,22 +17,20 @@ const SignUp = ({ setIsAuthenticated }) => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(
-        "https://chat-app-teal-pi-taupe.vercel.app/signUp",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            password,
-            confirm_password: confirmPassword,
-          }),
-        }
-      );
+      const res = await fetch("https://chat-app-gamma-sage.vercel.app/signUp", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          confirm_password: confirmPassword,
+        }),
+      });
 
       const data = await res.json();
       if (res.ok) {
@@ -70,6 +68,7 @@ const SignUp = ({ setIsAuthenticated }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              autoComplete="name"
             />
           </div>
           <div className="auth-input-container">
@@ -81,6 +80,7 @@ const SignUp = ({ setIsAuthenticated }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
             />
           </div>
           <div className="auth-input-container">
@@ -93,6 +93,7 @@ const SignUp = ({ setIsAuthenticated }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="new-password"
               />
               <div
                 onClick={() => setShowPassword((prev) => !prev)}
@@ -112,6 +113,7 @@ const SignUp = ({ setIsAuthenticated }) => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
+                autoComplete="new-password"
               />
               <div
                 onClick={() => setShowConfirmPassword((prev) => !prev)}

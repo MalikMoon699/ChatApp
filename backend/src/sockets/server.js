@@ -36,6 +36,7 @@ io.use((socket, next) => {
     socket.userId = userId;
     next();
   } catch (err) {
+    console.error("Socket auth error:", err.message);
     return next(new Error("Authentication error: Invalid token"));
   }
 });

@@ -10,7 +10,7 @@ import {
   userdata,
   editProfileRoute,
   updateProfile,
-  currunetUser,
+  currentUser,
   signUpValidation,
   loginValidation,
 } from "../Controllers/Auth.controller.js";
@@ -23,7 +23,7 @@ router.get("/api/auth/check", authMiddleware, (req, res) => {
   res.json({ isAuthenticated: true });
 });
 router.get("/users", authMiddleware, userdata);
-router.get("/current-user", authMiddleware, currunetUser);
+router.get("/current-user", authMiddleware, currentUser);
 router.get("/", authMiddleware, homeData);
 router.get("/logout", logout);
 router.get("/edit-profile/:id", authMiddleware, editProfileRoute);

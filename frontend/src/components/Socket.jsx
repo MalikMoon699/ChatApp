@@ -6,10 +6,7 @@ const token = document.cookie
   .find((row) => row.startsWith("token="))
   ?.split("=")[1];
 
-const socket = io("https://chat-app-teal-pi-taupe.vercel.app", {
-  query: {
-    userId: localStorage.getItem("userId"),
-  },
+const socket = io("https://chat-app-gamma-sage.vercel.app", {
   auth: { token },
   transports: ["websocket"],
   reconnection: true,
