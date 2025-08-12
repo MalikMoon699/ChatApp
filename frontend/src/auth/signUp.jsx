@@ -23,19 +23,23 @@ const SignUp = ({ setIsAuthenticated }) => {
 
     setLoading(true);
     try {
-      const res = await fetch("https://chat-app-gamma-sage.vercel.app/signUp", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          confirm_password: confirmPassword,
-        }),
-      });
+      const res = await fetch(
+        "https://chat-app-gamma-sage.vercel.app/signUp" ||
+          "http://localhost:3001/signUp",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+            confirm_password: confirmPassword,
+          }),
+        }
+      );
 
       const data = await res.json();
       if (res.ok) {

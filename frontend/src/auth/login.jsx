@@ -15,14 +15,18 @@ const Login = ({ setIsAuthenticated }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("https://chat-app-gamma-sage.vercel.app/login", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await fetch(
+        "https://chat-app-gamma-sage.vercel.app/login" ||
+          "http://localhost:3001/login",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await res.json();
       if (res.ok) {

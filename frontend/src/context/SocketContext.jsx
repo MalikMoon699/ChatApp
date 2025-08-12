@@ -20,11 +20,14 @@ export const SocketProvider = ({ children }) => {
         const user = await fetchCurrentUser();
         if (!user?._id) return;
 
-        const socketInstance = io("https://chat-app-gamma-sage.vercel.app", {
-          query: { userId: user._id },
-          auth: { token },
-          transports: ["websocket"],
-        });
+        const socketInstance = io(
+          "https://chat-app-gamma-sage.vercel.app" || "http://localhost:3001",
+          {
+            query: { userId: user._id },
+            auth: { token },
+            transports: ["websocket"],
+          }
+        );
 
         socketInstance.on("connect", () => {
           console.log("Socket connected:", socketInstance.id);

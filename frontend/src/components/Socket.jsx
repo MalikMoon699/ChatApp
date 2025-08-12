@@ -5,12 +5,15 @@ const token = document.cookie
   .find((row) => row.startsWith("token="))
   ?.split("=")[1];
 
-const socket = io("https://chat-app-gamma-sage.vercel.app", {
-  query: {
-    userId: localStorage.getItem("userId"),
-  },
-  auth: { token },
-  transports: ["websocket"],
-});
+const socket = io(
+  "https://chat-app-gamma-sage.vercel.app" || "http://localhost:3001",
+  {
+    query: {
+      userId: localStorage.getItem("userId"),
+    },
+    auth: { token },
+    transports: ["websocket"],
+  }
+);
 
 export default socket;

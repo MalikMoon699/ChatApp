@@ -1,4 +1,5 @@
 import connectDB from "./Config/db.js";
+import express from "express";
 import path from "path";
 import authRoutes from "./Routes/auth.routes.js";
 import messageRoutes from "./Routes/Message.routes.js";
@@ -16,7 +17,10 @@ const __dirname = dirname(__filename);
 
 app.use(
   cors({
-    origin: "https://chat-app-teal-pi-taupe.vercel.app",
+    origin: [
+      "https://chat-app-teal-pi-taupe.vercel.app",
+      "http://localhost:5173",
+    ],
     credentials: true,
   })
 );
