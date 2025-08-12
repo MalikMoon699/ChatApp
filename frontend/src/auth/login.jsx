@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import "../assets/styles/AuthForm.css";
 import { ArrowRight, Eye, EyeClosed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,9 @@ const Login = ({ setIsAuthenticated }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [noteVisible, setNoteVisible] = useState(true);
+  const [fadeClass, setFadeClass] = useState("fade-in");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -43,8 +46,29 @@ const Login = ({ setIsAuthenticated }) => {
     }
   };
 
+   useEffect(() => {
+     const fadeOutTimer = setTimeout(() => {
+       setFadeClass("fade-out");
+     }, 4000); // Start fade out at 4s
+
+     const hideTimer = setTimeout(() => {
+       setNoteVisible(false);
+     }, 5000); // Fully hide at 5s
+
+     return () => {
+       clearTimeout(fadeOutTimer);
+       clearTimeout(hideTimer);
+     };
+   }, []);
+
   return (
     <div className="auth-container">
+      {noteVisible && (
+        <div className={`note ${fadeClass}`}>
+          The server has been temporarily taken offline as a precautionary
+          measure to address security concerns.
+        </div>
+      )}
       <div className="auth-form-container">
         <h1 className="auth-title">
           Login to Chat <span>App</span>
