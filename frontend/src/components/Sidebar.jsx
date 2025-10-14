@@ -24,9 +24,7 @@ const Sidebar = ({
     if (!isAuthenticated) return;
     fetchAllUsers();
 
-    const socket = new WebSocket(
-      "wss://chat-app-gamma-sage.vercel.app" || "ws://http://localhost:3001"
-    );
+    const socket = new WebSocket(`${import.meta.env.VITE_BACKEND_URL}`);
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === "onlineUsers") {

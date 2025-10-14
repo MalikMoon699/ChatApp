@@ -19,8 +19,7 @@ const Login = ({ setIsAuthenticated }) => {
     setLoading(true);
     try {
       const res = await fetch(
-        "https://chat-app-gamma-sage.vercel.app/login" ||
-          "http://localhost:3001/login",
+        `${import.meta.env.VITE_BACKEND_URL}/auth/login`,
         {
           method: "POST",
           credentials: "include",

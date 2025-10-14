@@ -17,10 +17,7 @@ const __dirname = dirname(__filename);
 
 app.use(
   cors({
-    origin: [
-      "https://chat-app-teal-pi-taupe.vercel.app",
-      "http://localhost:5173",
-    ],
+    origin: [`${process.env.FRONTEND_URL}`],
     credentials: true,
   })
 );
@@ -28,7 +25,10 @@ app.use(
 app.use(cookieParser());
 connectDB();
 app.use(express.json());
-app.use("/", authRoutes);
+app.get("/", (req, res) => {
+  res.send("Welcome to the Server API");
+});
+app.use("/auth", authRoutes);
 app.use("/message", messageRoutes);
 
 const PORT = process.env.PORT || 3001;

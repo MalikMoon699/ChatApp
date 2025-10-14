@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post("/signUp", upload.single("profile"), signUp);
 router.post("/login", login);
-router.get("/api/auth/check", authMiddleware, (req, res) => {
+router.get("/api/check", authMiddleware, (req, res) => {
   res.json({ isAuthenticated: true });
 });
 router.get("/users", authMiddleware, userdata);
@@ -28,3 +28,4 @@ router.post(
 );
 
 export default router;
+// /auth

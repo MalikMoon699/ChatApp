@@ -15,8 +15,7 @@ function App() {
     const checkAuth = async () => {
       try {
         const response = await fetch(
-          "https://chat-app-gamma-sage.vercel.app/api/auth/check" ||
-            "http://localhost:3001/api/auth/check",
+          `${import.meta.env.VITE_BACKEND_URL}/auth/api/check`,
           {
             credentials: "include",
           }

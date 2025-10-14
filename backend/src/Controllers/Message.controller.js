@@ -78,6 +78,7 @@ export const deleteMessage = async (req, res) => {
     res.status(200).json({ success: true });
   } catch (err) {
     res.status(500).json({ error: "Failed to delete message" });
+
   }
 };
 

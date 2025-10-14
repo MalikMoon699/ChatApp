@@ -1,8 +1,7 @@
 export const fetchUsers = async (search = "") => {
   try {
     const res = await fetch(
-      `https://chat-app-gamma-sage.vercel.app/users?search=${search}` ||
-        `http://localhost:3001/users?search=${search}`,
+      `${import.meta.env.VITE_BACKEND_URL}/auth/users?search=${search}`,
       {
         credentials: "include",
       }
@@ -22,14 +21,10 @@ export const fetchUsers = async (search = "") => {
 
 export const handleLogout = async () => {
   try {
-    const res = await fetch(
-      "https://chat-app-gamma-sage.vercel.app/logout" ||
-        "http://localhost:3001/logout",
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, {
+      method: "GET",
+      credentials: "include",
+    });
 
     return res.ok;
   } catch (err) {
@@ -41,8 +36,7 @@ export const handleLogout = async () => {
 export const sendMessage = async (receiverId, message) => {
   try {
     const res = await fetch(
-      `https://chat-app-gamma-sage.vercel.app/message/send/${receiverId}` ||
-        `http://localhost:3001/message/send/${receiverId}`,
+      `${import.meta.env.VITE_BACKEND_URL}/message/send/${receiverId}`,
       {
         method: "POST",
         headers: {
@@ -68,8 +62,7 @@ export const sendMessage = async (receiverId, message) => {
 export const fetchCurrentUser = async () => {
   try {
     const res = await fetch(
-      "https://chat-app-gamma-sage.vercel.app/current-user" ||
-        "http://localhost:3001/current-user",
+      `${import.meta.env.VITE_BACKEND_URL}/auth/current-user`,
       {
         credentials: "include",
       }
@@ -90,8 +83,7 @@ export const fetchCurrentUser = async () => {
 export const fetchMessages = async (receiverId) => {
   try {
     const res = await fetch(
-      `https://chat-app-gamma-sage.vercel.app/message/get/${receiverId}`||
-      `http://localhost:3001/message/get/${receiverId}`,
+      `${import.meta.env.VITE_BACKEND_URL}/message/get/${receiverId}`,
       {
         credentials: "include",
       }
@@ -112,8 +104,7 @@ export const fetchMessages = async (receiverId) => {
 export const deleteMessage = async (messageId, receiverId) => {
   try {
     const res = await fetch(
-      `https://chat-app-gamma-sage.vercel.app/message/delete/${messageId}` ||
-        `http://localhost:3001/message/delete/${messageId}`,
+      `${import.meta.env.VITE_BACKEND_URL}/message/delete/${messageId}`,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -136,8 +127,7 @@ export const deleteMessage = async (messageId, receiverId) => {
 export const updateMessage = async (messageId, newContent, receiverId) => {
   try {
     const res = await fetch(
-      `https://chat-app-gamma-sage.vercel.app/message/update/${messageId}` ||
-        `http://localhost:3001/message/update/${messageId}`,
+      `${import.meta.env.VITE_BACKEND_URL}/message/update/${messageId}`,
       {
         method: "PUT",
         headers: {

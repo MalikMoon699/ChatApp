@@ -1,8 +1,7 @@
 export const fetchUsers = async (search = "") => {
   try {
     const res = await fetch(
-      `https://chat-app-gamma-sage.vercel.app/users?search=${search}` ||
-        `http://localhost:3001/users?search=${search}`,
+      `${import.meta.env.VITE_BACKEND_URL}/auth/users?search=${search}`,
       {
         credentials: "include",
       }
@@ -22,14 +21,10 @@ export const fetchUsers = async (search = "") => {
 
 export const handleLogout = async () => {
   try {
-    const res = await fetch(
-      "https://chat-app-gamma-sage.vercel.app/logout" ||
-        "http://localhost:3001/logout",
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, {
+      method: "GET",
+      credentials: "include",
+    });
 
     return res.ok;
   } catch (err) {
