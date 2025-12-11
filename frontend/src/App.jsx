@@ -35,11 +35,25 @@ function App() {
   if (loading) {
     return <Loader loading={true} />;
   }
+  
 
   return (
     <Routes>
       <Route
         path="/"
+        element={
+          isAuthenticated ? (
+            <Home
+              setIsAuthenticated={setIsAuthenticated}
+              isAuthenticated={isAuthenticated}
+            />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/:id"
         element={
           isAuthenticated ? (
             <Home

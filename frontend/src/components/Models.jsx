@@ -11,6 +11,7 @@ import {
   SendHorizontal,
   X,
 } from "lucide-react";
+import { formatFullDate, groupMessagesByDate } from "../services/Helper";
 
 const Models = ({
   isDetail,
@@ -22,6 +23,7 @@ const Models = ({
   detailsModel,
   setDetailsModel,
   selectedContact,
+  setSelectedContact,
   isDelete,
   selectedMsg,
   setIsMore,
@@ -41,6 +43,11 @@ const Models = ({
   messages,
   setEditingId,
 }) => {
+  
+  const sortedMessages = [...messages].sort(
+    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+  );
+
   return (
     <div>
       {/* User Profile Modal */}
@@ -159,85 +166,100 @@ const Models = ({
                 </p>
               </div>
             </div>
-            {messages.length > 0 ? (
-              messages.map((msg) => (
-                <div
-                  key={msg._id}
-                  className={`${
-                    msg.senderId === currentUser?._id
-                      ? "send-message"
-                      : "recive-message"
-                  } message-container`}
-                >
-                  <div className="message-content">
-                    {msg.senderId === currentUser?._id && (
-                      <span
-                        onClick={() => {
-                          setIsMore((prev) =>
-                            prev === msg._id ? null : msg._id
-                          );
-                        }}
-                        className="more-options-container"
-                      >
-                        {isMore === msg._id ? (
-                          <ChevronUp size={16} />
-                        ) : (
-                          <ChevronDown size={16} />
-                        )}
-                      </span>
-                    )}
-                    <div className="message">
-                      {editingId === msg._id ? (
-                        <div className="edit-message-box">
-                          <input
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            autoFocus
-                          />
-                          <span onClick={() => setEditingId(null)}>
-                            <X />
-                          </span>
-                          <span onClick={() => handleEdit(msg._id)}>
-                            <SendHorizontal />
-                          </span>
-                        </div>
-                      ) : (
-                        <p>{msg.message}</p>
-                      )}
+            {sortedMessages.length > 0 ? (
+              Object.entries(groupMessagesByDate(sortedMessages)).map(
+                ([dateKey, dayMsgs]) => (
+                  <div key={dateKey} className="day-messages-container">
+                    <div className="day-wrap-container">
+                      <span>{formatFullDate(dateKey)}</span>
                     </div>
-                    <p className="message-time">
-                      {new Date(msg.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </p>
+                    <div className="day-messages-wrap">
+                      {dayMsgs.map((msg) => (
+                        <div
+                          key={msg._id}
+                          className={`${
+                            msg.senderId === currentUser?._id
+                              ? "send-message"
+                              : "recive-message"
+                          } message-container`}
+                        >
+                          <div className="message-content">
+                            {msg.senderId === currentUser?._id && (
+                              <span
+                                onClick={() => {
+                                  setIsMore((prev) =>
+                                    prev === msg._id ? null : msg._id
+                                  );
+                                }}
+                                className="more-options-container"
+                              >
+                                {isMore === msg._id ? (
+                                  <ChevronUp size={16} />
+                                ) : (
+                                  <ChevronDown size={16} />
+                                )}
+                              </span>
+                            )}
 
-                    {isMore === msg._id &&
-                      msg.senderId === currentUser?._id && (
-                        <div className="more-options">
-                          <button
-                            onClick={() => {
-                              setEditingId(msg._id);
-                              setEditValue(msg.message);
-                              setIsMore(false);
-                            }}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedMsg(msg);
-                              setIsDelete(true);
-                            }}
-                          >
-                            Delete
-                          </button>
+                            <div className="message">
+                              {editingId === msg._id ? (
+                                <div className="edit-message-box">
+                                  <input
+                                    value={editValue}
+                                    onChange={(e) =>
+                                      setEditValue(e.target.value)
+                                    }
+                                    autoFocus
+                                  />
+                                  <span onClick={() => setEditingId(null)}>
+                                    <X />
+                                  </span>
+                                  <span onClick={() => handleEdit(msg._id)}>
+                                    <SendHorizontal />
+                                  </span>
+                                </div>
+                              ) : (
+                                <p>{msg.message}</p>
+                              )}
+                            </div>
+
+                            <p className="message-time">
+                              {new Date(msg.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              })}
+                            </p>
+
+                            {isMore === msg._id &&
+                              msg.senderId === currentUser?._id && (
+                                <div className="more-options">
+                                  <button
+                                    onClick={() => {
+                                      setEditingId(msg._id);
+                                      setEditValue(msg.message);
+                                      setIsMore(false);
+                                    }}
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedMsg(msg);
+                                      setIsDelete(true);
+                                    }}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
+                          </div>
                         </div>
-                      )}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))
+                )
+              )
             ) : (
               <p className="empty-message">No messages yet</p>
             )}
@@ -251,9 +273,6 @@ const Models = ({
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessages()}
             />
-            <span>
-              <Paperclip />
-            </span>
             <span onClick={sendMessages}>
               <SendHorizontal />
             </span>
@@ -264,7 +283,12 @@ const Models = ({
       {/* Contact Details Modal */}
       {detailsModel && (
         <div className="model-overlay" onClick={() => setDetailsModel(false)}>
-          <div className="model-content">
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            className="model-content"
+          >
             <div className="model-header">
               <button
                 onClick={() => setDetailsModel(false)}

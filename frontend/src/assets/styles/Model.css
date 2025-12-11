@@ -69,14 +69,14 @@
   display: flex;
   align-items: center;
   padding: 16px;
-  background-color: red;
+  background-color:#10b7fe;
   border-radius: 8px 8px 0px 0px;
 }
 
 .back-button {
   border: none;
   cursor: pointer;
-  color: red;
+  color: #10b7fe;
   padding: 14px;
   display: flex;
   align-items: center;

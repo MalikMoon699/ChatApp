@@ -3,6 +3,7 @@ import { useSocketContext } from "../context/SocketContext";
 import Sidebar from "../components/Sidebar";
 import "../assets/styles/ChatPage.css";
 import welcomeIcon from "../assets/images/logo.png";
+import { fetchUsers } from "../Utils/Message";
 import {
   sendMessage as sendMsgAPI,
   fetchCurrentUser,
@@ -11,11 +12,15 @@ import {
   updateMessage as updateMsgAPI,
 } from "../Utils/Message";
 import Models from "../components/Models";
+import { useLocation } from "react-router";
 
 const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
   const { socket } = useSocketContext();
   const chatContainerRef = useRef(null);
-
+  const location = useLocation();
+  const [users, setUsers] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
   const [detailsModel, setDetailsModel] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
@@ -35,8 +40,21 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
   }, [messages]);
 
   useEffect(() => {
+    fetchAllUsers();
     handleCurrentUser();
   }, []);
+
+  const urlUserId = location.pathname.slice(1);
+  useEffect(() => {
+    if (!users || users.length === 0) return;
+
+    if (urlUserId) {
+      const found = users.find((u) => u._id === urlUserId);
+      if (found) {
+        setSelectedContact(found);
+      }
+    }
+  }, [users, urlUserId]);
 
   useEffect(() => {
     if (selectedContact) {
@@ -48,7 +66,11 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
     if (!socket) return;
 
     socket.on("newMessage", (newMsg) => {
-      if (selectedContact && newMsg.senderId === selectedContact._id) {
+      if (
+        selectedContact &&
+        (newMsg.senderId === selectedContact._id ||
+          newMsg.receiverId === selectedContact._id)
+      ) {
         setMessages((prev) => [...prev, newMsg]);
       }
     });
@@ -99,9 +121,9 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
   const sendMessages = async () => {
     if (!message.trim()) return;
     try {
-      await sendMsgAPI(selectedContact._id, message);
+      const newMsg = await sendMsgAPI(selectedContact._id, message);
+      setMessages((prev) => [...prev, newMsg]);
       setMessage("");
-      await handleGetMessages();
     } catch (error) {
       console.error("Error sending message:", error.message);
     }
@@ -131,9 +153,31 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
     }
   };
 
+  const fetchAllUsers = async () => {
+    try {
+      setLoading(true);
+      const result = await fetchUsers(searchTerm);
+      setUsers(result);
+    } catch (err) {
+      console.error("Error fetching users", err);
+      if (err.message === "Unauthorized") {
+        setIsAuthenticated(false);
+        navigate("/login");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="app-container">
       <Sidebar
+        setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
+        users={users}
+        setUsers={setUsers}
+        loading={loading}
+        setLoading={setLoading}
         setSelectedContact={setSelectedContact}
         setIsAuthenticated={setIsAuthenticated}
         isAuthenticated={isAuthenticated}
@@ -157,6 +201,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
           setSelectedMsg={setSelectedMsg}
           handleDelete={handleDelete}
           selectedContact={selectedContact}
+          setSelectedContact={setSelectedContact}
           chatContainerRef={chatContainerRef}
           messages={messages}
           message={message}
@@ -173,6 +218,7 @@ const ChatPage = ({ setIsAuthenticated, isAuthenticated }) => {
           detailsModel={detailsModel}
           setDetailsModel={setDetailsModel}
           selectedContact={selectedContact}
+          setSelectedContact={setSelectedContact}
           messages={messages}
         />
       )}

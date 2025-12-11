@@ -13,4 +13,8 @@ const socket = io(`${import.meta.env.VITE_BACKEND_URL}`, {
   transports: ["websocket"],
 });
 
+socket.on("connect", () => {
+  console.log("✅ Socket connected:", socket.id);
+});
+
 export default socket;

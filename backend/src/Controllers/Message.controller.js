@@ -32,10 +32,15 @@ export const sendMessage = async (req, res) => {
     await Promise.all([conversation.save(), newMessage.save()]);
 
     const receiverSocketId = getReceiverSocketId(receiverId);
+    const senderSocketId = getReceiverSocketId(senderId);
+
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("newMessage", newMessage);
+    }
     res.status(201).json(newMessage);
   } catch (error) {
     console.log("Error in sendMessage", error);
@@ -78,7 +83,6 @@ export const deleteMessage = async (req, res) => {
     res.status(200).json({ success: true });
   } catch (err) {
     res.status(500).json({ error: "Failed to delete message" });
-
   }
 };
 

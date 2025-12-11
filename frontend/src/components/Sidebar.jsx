@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { LogOut, Search } from "lucide-react";
+import { useSocketContext } from "../context/SocketContext";
 import { fetchUsers, handleLogout } from "../Utils/Message";
 import Models from "./Models";
 import Loader from "./Loader";
@@ -11,47 +12,28 @@ const Sidebar = ({
   setIsAuthenticated,
   isAuthenticated,
   currentUser,
+  users,
+  setUsers,
+  loading,
+  setLoading,
+  setSearchTerm,
+  searchTerm,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [users, setUsers] = useState(null);
+  const { socket } = useSocketContext();
   const [onlineUsers, setOnlineUsers] = useState([]);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
   const [isDetail, setIsDetail] = useState(false);
   const [isLogout, setIsLogout] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
-    fetchAllUsers();
+    if (!socket) return;
 
-    const socket = new WebSocket(`${import.meta.env.VITE_BACKEND_URL}`);
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "onlineUsers") {
-        setOnlineUsers(data.users);
-      }
-    };
+    socket.on("onlineUsers", (users) => {
+      setOnlineUsers(users);
+    });
 
-    return () => {
-      socket.close();
-    };
-  }, [isAuthenticated]);
-
-  const fetchAllUsers = async () => {
-    try {
-      setLoading(true);
-      const result = await fetchUsers(searchTerm);
-      setUsers(result);
-    } catch (err) {
-      console.error("Error fetching users", err);
-      if (err.message === "Unauthorized") {
-        setIsAuthenticated(false);
-        navigate("/login");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => socket.off("onlineUsers");
+  }, [socket]);
 
   const handleLogoutClick = async () => {
     try {
@@ -108,7 +90,7 @@ const Sidebar = ({
             return (
               <div
                 className="chat-item"
-                onClick={() => handleContactClick(user)}
+                onClick={()=>{navigate(`/${user?._id}`)}}
                 key={user._id}
                 style={{
                   background: selectedContact?._id === user._id ? "white" : "",
@@ -144,7 +126,7 @@ const Sidebar = ({
         )}
       </div>
 
-      <div className="sidebar-bottom" onClick={() => setIsDetail(true)}>
+      <div className="sidebar-bottom">
         <img
           src={
             currentUser?.profile_img ||
@@ -157,6 +139,13 @@ const Sidebar = ({
           <h1>{currentUser?.name || "No user"}</h1>
           <p>{currentUser?.email || "no@email.com"}</p>
         </div>
+        <button
+          onClick={handleLogoutClick}
+          className="logout-btn"
+          style={{ width: "40px" }}
+        >
+          <LogOut />
+        </button>
       </div>
 
       {isDetail && (

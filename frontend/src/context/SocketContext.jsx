@@ -7,45 +7,39 @@ const SocketContext = createContext();
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
-  useEffect(() => {
-    const setupSocket = async () => {
-      try {
-        const token = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("token="))
-          ?.split("=")[1];
+ useEffect(() => {
+   const setupSocket = async () => {
+     const token = document.cookie
+       .split("; ")
+       .find((row) => row.startsWith("token="))
+       ?.split("=")[1];
+     if (!token) return;
 
-        if (!token) return;
+     const user = await fetchCurrentUser();
+     if (!user?._id) return;
 
-        const user = await fetchCurrentUser();
-        if (!user?._id) return;
+     setTimeout(() => {
+       const socketInstance = io(`${import.meta.env.VITE_BACKEND_URL}`, {
+         query: { userId: user._id },
+         auth: { token },
+         transports: ["websocket"],
+         withCredentials: true,
+       });
 
-        const socketInstance = io(`${import.meta.env.VITE_BACKEND_URL}`, {
-          query: { userId: user._id },
-          auth: { token },
-          transports: ["websocket"],
-        });
+       socketInstance.on("connect", () => {
+         console.log("✅ Connected to Socket.io:", socketInstance.id);
+       });
 
-        socketInstance.on("connect", () => {
-          console.log("Socket connected:", socketInstance.id);
-        });
+       socketInstance.on("connect_error", (err) => {
+         console.error("❌ Socket connect error:", err.message);
+       });
 
-        socketInstance.on("connect_error", (error) => {
-          console.error("Socket connection error:", error.message);
-        });
+       setSocket(socketInstance);
+     }, 500);
+   };
 
-        setSocket(socketInstance);
-
-        return () => {
-          socketInstance.disconnect();
-        };
-      } catch (error) {
-        console.error("Socket setup error:", error);
-      }
-    };
-
-    setupSocket();
-  }, []);
+   setupSocket();
+ }, []);
 
   return (
     <SocketContext.Provider value={{ socket }}>
